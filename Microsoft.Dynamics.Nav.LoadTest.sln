@@ -1,0 +1,41 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Dynamics.Nav.UserSession", "Microsoft.Dynamics.Nav.UserSession\Microsoft.Dynamics.Nav.UserSession.csproj", "{FB75EE9A-A002-49CA-8891-C7C58C62EFB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Dynamics.Nav.LoadTest", "Microsoft.Dynamics.Nav.LoadTest\Microsoft.Dynamics.Nav.LoadTest.csproj", "{4C7EC83F-B6B0-4C88-A7D0-EDBCDED006DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF878578-4CAD-46F0-B859-5C012167EBA7}"
+	ProjectSection(SolutionItems) = preProject
+		LocalLoadTest.testsettings = LocalLoadTest.testsettings
+		Binaries\Microsoft.Dynamics.Framework.UI.Client.dll = Binaries\Microsoft.Dynamics.Framework.UI.Client.dll
+		Binaries\Microsoft.Dynamics.Framework.UI.Client.Net40.dll = Binaries\Microsoft.Dynamics.Framework.UI.Client.Net40.dll
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Dynamics.Nav.TestUtilities", "Microsoft.Dynamics.Nav.TestUtilities\Microsoft.Dynamics.Nav.TestUtilities.csproj", "{2FC6BDA7-943C-4734-9D8E-427653C9A86D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FB75EE9A-A002-49CA-8891-C7C58C62EFB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB75EE9A-A002-49CA-8891-C7C58C62EFB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB75EE9A-A002-49CA-8891-C7C58C62EFB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB75EE9A-A002-49CA-8891-C7C58C62EFB7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4C7EC83F-B6B0-4C88-A7D0-EDBCDED006DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4C7EC83F-B6B0-4C88-A7D0-EDBCDED006DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4C7EC83F-B6B0-4C88-A7D0-EDBCDED006DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4C7EC83F-B6B0-4C88-A7D0-EDBCDED006DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2FC6BDA7-943C-4734-9D8E-427653C9A86D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2FC6BDA7-943C-4734-9D8E-427653C9A86D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2FC6BDA7-943C-4734-9D8E-427653C9A86D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2FC6BDA7-943C-4734-9D8E-427653C9A86D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
