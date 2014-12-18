@@ -142,9 +142,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             // Set Sell-to Customer No. to a Random Customer and ignore any credit warning
             TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, newSalesOrderPage.Control("Sell-to Customer No."), custno);
 
-            // complete required fields
             TestScenario.SaveValueWithDelay(newSalesOrderPage.Control("External Document No."), custno);
-            TestScenario.SaveValueWithDelay(newSalesOrderPage.Control("Payment Channel"), "Direct Debit");
 
             userContext.ValidateForm(newSalesOrderPage);
 
