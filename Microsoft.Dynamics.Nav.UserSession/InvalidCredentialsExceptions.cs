@@ -2,10 +2,10 @@
 
 namespace Microsoft.Dynamics.Nav.UserSession
 {
-
     /// <summary>
     /// Test exception class which signals the invalid credentials fault to the test side.
     /// </summary>
+    [SerializableAttribute] 
     public class InvalidCredentialsException : Exception
     {
         /// <summary>

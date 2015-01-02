@@ -41,7 +41,9 @@
     <Reference Include="System.Windows" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="WindowsUserContextManager.cs" />
     <Compile Include="SafeRandom.cs" />
+    <Compile Include="NAVUserContextManager.cs" />
     <Compile Include="UserContextManager.cs" />
     <Compile Include="DelayTiming.cs" />
     <Compile Include="TestScenario.cs" />

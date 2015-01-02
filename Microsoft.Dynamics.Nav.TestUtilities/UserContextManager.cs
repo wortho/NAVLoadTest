@@ -1,84 +1,162 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using Microsoft.Dynamics.Framework.UI.Client;
 using Microsoft.Dynamics.Nav.UserSession;
+using Microsoft.VisualStudio.TestTools.LoadTesting;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Dynamics.Nav.TestUtilities
 {
     /// <summary>
-    /// Delegate to enable the test to create a user context
+    /// UserContextManager provides user contexts for a given tenant/company/user
+    /// This allows tests to reuse sessions for a given virtual user
+    /// The purpose of the class is to ensure that there are as many active NAV sessions as there are virtual users
     /// </summary>
-    /// <param name="tenantId">tenantId for the user</param>
-    /// <param name="company">company for the user</param>
-    /// <returns></returns>
-    public delegate UserContext CreateUserContextDelegate(string tenantId, string company);
-
-    /// <summary>
-    /// UserContextManager manges a limited pool of user contexts for a given tenant/company
-    /// </summary>
-    public class UserContextManager : IDisposable
+    public abstract class UserContextManager : IDisposable
     {
-        private readonly CreateUserContextDelegate createUserContext;
-        private ConcurrentQueue<UserContext> UserContextPool { get; set; }
-        public int UserContextsPerUserContextManager { get; private set; }
+        private ConcurrentDictionary<int, UserContext> UserContextPool { get; set; }
+        public string NAVServerUrl { get; private set; }
         public string TenantId { get; private set; }
         public string Company { get; private set; }
-
-        public UserContextManager(string tenantId, string companyName, CreateUserContextDelegate createUserContext)
+        public int? RoleCenterId { get; private set; }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="navServerUrl">URL for NAV ClientService</param>
+        /// <param name="tenantId">Tenant</param>
+        /// <param name="companyName">Company</param>
+        /// <param name="roleCenterId">Role Center to use for the users</param>
+        public UserContextManager(string navServerUrl, string tenantId, string companyName, int? roleCenterId)
         {
-            if (createUserContext == null)
-            {
-                throw new ArgumentNullException("createUserContext");
-            }
-            this.UserContextPool = new ConcurrentQueue<UserContext>();
-            this.createUserContext = createUserContext;
+            this.UserContextPool = new ConcurrentDictionary<int, UserContext>();
+            NAVServerUrl = navServerUrl;
             this.TenantId = tenantId;
             this.Company = companyName;
-            this.UserContextsPerUserContextManager = 10;
+            RoleCenterId = roleCenterId;
         }
 
+        /// <summary>
+        /// Thread safety for UserContext creation ensure we don't try and create users simultaneously
+        /// </summary>
+        private static readonly object Lockobj = new object();
 
-        public UserContext GetUserContext()
+        /// <summary>
+        /// Create a new UserContext and instruments the session transactions 
+        /// </summary>
+        /// <param name="testContext">The current Test Context</param>
+        /// <returns>a new UserContext</returns>
+        private UserContext CreateSession(TestContext testContext)
         {
-            if (this.UserContextsPerUserContextManager > 0)
+            lock (Lockobj)
             {
-                this.UserContextsPerUserContextManager--;
-            }
-            else
-            {
-                if (this.UserContextPool.Count > 0)
+                var userContext = CreateUserContext(testContext);
+                using (new TestTransaction(testContext, "InitializeSession"))
                 {
-                    UserContext userContext;
-                    if (this.UserContextPool.TryDequeue(out userContext))
+                    userContext.InitializeSession(NAVServerUrl);
+                }
+
+                using (new TestTransaction(testContext, "OpenSession"))
+                {
+                    userContext.OpenSession();
+                }
+
+                if (RoleCenterId.HasValue)
+                {
+                    using (new TestTransaction(testContext, "OpenRoleCenter"))
                     {
-                        return userContext;
+                        userContext.OpenRoleCenter(RoleCenterId.Value);
                     }
                 }
+
+                return userContext;
             }
-            return createUserContext(this.TenantId, this.Company);
+        }
+        
+        /// <summary>
+        /// Get the User Context for the test user and create a new user if it doesn't already exist
+        /// </summary>
+        /// <param name="testContext"></param>
+        /// <returns></returns>
+        public UserContext GetUserContext(TestContext testContext)
+        {
+            string userName = GetUserName(testContext);
+            UserContext userContext = CreateUserContext(testContext);
+            int userId = GetTestUserId(testContext);
+            if (this.UserContextPool.TryRemove(userId, out userContext))
+            {
+                return userContext;
+            }
+            return CreateSession(testContext);
         }
 
+        /// <summary>
+        /// Get the UserName for the current virtual user
+        /// </summary>
+        /// <param name="testContext">current test context</param>
+        /// <returns></returns>
+        protected abstract string GetUserName(TestContext testContext);
 
-        public void ReturnUserContext(UserContext userContext)
+        /// <summary>
+        /// Create a new user context for the current virtual user
+        /// </summary>
+        /// <param name="testContext">current test context</param>
+        /// <returns></returns>
+        protected abstract UserContext CreateUserContext(TestContext testContext);
+        
+        /// <summary>
+        /// Return the user context to the pool
+        /// </summary>
+        /// <param name="testContext"></param>
+        /// <param name="userContext"></param>
+        public void ReturnUserContext(TestContext testContext, UserContext userContext)
         {
             if (userContext != null)
             {
-                this.UserContextPool.Enqueue(userContext);
+                int userId = GetTestUserId(testContext);
+                this.UserContextPool.TryAdd(userId, userContext);
             }
         }
-
         public void Dispose()
         {
-            CloseAllSessions();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                CloseAllSessions();
+            }
         }
 
         public void CloseAllSessions()
         {
-            UserContext userContext;
             // close any open sessions
-            while (this.UserContextPool.TryDequeue(out userContext))
+            foreach (var context in UserContextPool)
             {
-                userContext.CloseSession();
+                context.Value.CloseSession();
             }
+        }
+
+        /// <summary>
+        /// Get a unique id for the current virtual user or 0 if there is no load test context
+        /// </summary>
+        /// <param name="testContext">current test context</param>
+        /// <returns></returns>
+        protected static int GetTestUserId(TestContext testContext)
+        {
+            LoadTestUserContext loadTestUserContext = GetLoadTestUserContext(testContext);
+            return (loadTestUserContext != null) ? loadTestUserContext.UserId : 0;
+        }
+                
+        protected static LoadTestUserContext GetLoadTestUserContext(TestContext testContext)
+        {
+            if (testContext.Properties.Contains("$LoadTestUserContext"))
+            {
+                return testContext.Properties["$LoadTestUserContext"] as LoadTestUserContext;
+            }
+            return null;
         }
     }
 }

@@ -19,25 +19,35 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private const int SalesOrderListPageId = 9305;
         private const int SalesOrderPageId = 42;
 
-        private static UserContextManager orderProcessorContextManager;
+        private static UserContextManager orderProcessorUserContextManager;
 
-        public UserContextManager OrderProcessorContextManager
+        public UserContextManager OrderProcessorUserContextManager
         {
             get
             {
-                return orderProcessorContextManager ?? (orderProcessorContextManager =
-                    new UserContextManager(
-                        tenantId: null,
-                        companyName: null,
-                        createUserContext: (tenantId, company) =>
-                            TestScenario.CreateUserContext(
-                                TestContext, tenantId, company,
-                                OrderProcessorRoleCenterId, NavServerUrl,
-                                NAVAuthenticationScheme,
-                                NAVUserName,
-                                NAVPassword)
-                    ));
+                return orderProcessorUserContextManager ?? CreateUserContextManager();
             }
+        }
+
+        private UserContextManager CreateUserContextManager()
+        {
+            // Use the current windows user 
+            orderProcessorUserContextManager = new WindowsUserContextManager(
+                    NAVClientService,
+                    null,
+                    null,
+                    OrderProcessorRoleCenterId);
+
+            // to use NAV User Password authentication for multiple users uncomment the following
+            // orderProcessorUserContextManager = new NAVUserContextManager(
+            //        NavServerUrl,
+            //        null,
+            //        null,
+            //        OrderProcessorRoleCenterId,
+            //        NAVUserName,
+            //        NAVPassword);
+
+            return orderProcessorUserContextManager;
         }
 
         public string NAVPassword
@@ -56,7 +66,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             }
         }
 
-        public string NavServerUrl
+        public string NAVClientService
         {
             get
             {
@@ -64,20 +74,12 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             }
         }
 
-        public AuthenticationScheme NAVAuthenticationScheme
-        {
-            get
-            {
-                return Settings.Default.NAVUserAuthenticationScheme;
-            }
-        }
-
         [ClassCleanup]
         public static void Cleanup()
         {
-            if (orderProcessorContextManager != null)
+            if (orderProcessorUserContextManager != null)
             {
-                orderProcessorContextManager.CloseAllSessions();
+                orderProcessorUserContextManager.CloseAllSessions();
             }
         }
 
@@ -85,7 +87,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         public void OpenSalesOrderList()
         {
             // Open Page "Sales Order List" which contains a list of all sales orders
-            TestScenario.Run(OrderProcessorContextManager, TestContext,
+            TestScenario.Run(OrderProcessorUserContextManager, TestContext,
                 userContext => TestScenario.RunPageAction(TestContext, userContext, SalesOrderListPageId));
         }
 
@@ -93,7 +95,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         public void OpenCustomerList()
         {
             // Open Customers
-            TestScenario.Run(OrderProcessorContextManager, TestContext,
+            TestScenario.Run(OrderProcessorUserContextManager, TestContext,
                 userContext => TestScenario.RunPageAction(TestContext, userContext, CustomerListPageId));
         }
 
@@ -101,14 +103,14 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         public void OpenItemList()
         {
             // Open Customers
-            TestScenario.Run(OrderProcessorContextManager, TestContext,
+            TestScenario.Run(OrderProcessorUserContextManager, TestContext,
                 userContext => TestScenario.RunPageAction(TestContext, userContext, ItemListPageId));
         }
 
         [TestMethod]
         public void LookupRandomCustomer()
         {
-            TestScenario.Run(OrderProcessorContextManager, TestContext,
+            TestScenario.Run(OrderProcessorUserContextManager, TestContext,
                 userContext =>
                 {
                     string custNo = TestScenario.SelectRandomRecordFromListPage(this.TestContext, CustomerListPageId, userContext, "No.");
@@ -119,7 +121,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         [TestMethod]
         public void CreateAndPostSalesOrder()
         {
-            TestScenario.Run(OrderProcessorContextManager, TestContext, RunCreateAndPostSalesOrder);
+            TestScenario.Run(OrderProcessorUserContextManager, TestContext, RunCreateAndPostSalesOrder);
         }
 
         public void RunCreateAndPostSalesOrder(UserContext userContext)

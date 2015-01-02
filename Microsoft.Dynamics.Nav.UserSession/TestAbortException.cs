@@ -5,6 +5,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
     /// <summary>
     /// Used to abort a test e.g. when an unexpected dialog is shown.
     /// </summary>
+    [SerializableAttribute] 
     public class TestAbortException : Exception
     {
         /// <summary>

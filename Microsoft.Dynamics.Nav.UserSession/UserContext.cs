@@ -9,42 +9,63 @@ namespace Microsoft.Dynamics.Nav.UserSession
 {
     public class UserContext
     {
-        private ClientSession clientSession;
-
-        public UserContext(string tenantId, string company)
+        public UserContext(string tenantId, string company, AuthenticationScheme authenticationScheme, string userName = null, string password = null)
         {
             TenantId = tenantId;
             Company = company;
+            AuthenticationScheme = authenticationScheme;
+            UserName = userName;
+            Password = password;
+        }
+
+        public string TenantId { get; private set; }
+
+        public string Company { get; private set; }
+
+        public AuthenticationScheme AuthenticationScheme { get; private set; }
+
+        public string UserName { get; private set; }
+
+        public string Password { get; private set; }
+
+        private ClientSession clientSession;
+
+        private ClientSession ClientSession
+        {
+            get
+            {
+                if (clientSession == null)
+                {
+                    throw new InvalidOperationException("Client Session Not Initialized");
+                }
+                return clientSession;
+            }
         }
 
         public event EventHandler<ClientDialogToShowEventArgs> DialogHandler;
 
         public ClientLogicalForm RoleCenterPage { get; private set; }
 
-        public string TenantId { get; private set; }
-
-        public string Company { get; private set; }
-
         /// <summary>Opens the session synchronously.</summary>
         public void OpenSession()
         {
-            this.clientSession.OpenSession();
-            this.clientSession.DialogToShow += clientSession_DialogToShow;
+            this.ClientSession.OpenSession();
+            this.ClientSession.DialogToShow += clientSession_DialogToShow;
         }
 
         /// <summary>Closes the session synchronously.</summary>
         public void CloseSession()
         {
             this.CloseAllForms();
-            this.clientSession.CloseSession();
-            this.clientSession.DialogToShow -= clientSession_DialogToShow;
+            this.ClientSession.CloseSession();
+            this.ClientSession.DialogToShow -= clientSession_DialogToShow;
         }
 
         /// <summary>Invokes the interaction synchronously.</summary>
         /// <param name="interaction">The interaction.</param>
         public void InvokeInteraction(ClientInteraction interaction)
         {
-            this.clientSession.InvokeInteraction(interaction);
+            this.ClientSession.InvokeInteraction(interaction);
         }
 
         private void clientSession_DialogToShow(object sender, ClientDialogToShowEventArgs e)
@@ -56,18 +77,18 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <summary>Closes the froms in the session synchronously.</summary>
         public void CloseAllForms()
         {
-            this.clientSession.CloseAllForms();
-            this.clientSession.AwaitAllFormsAreClosedAndSessionIsReady();
+            this.ClientSession.CloseAllForms();
+            this.ClientSession.AwaitAllFormsAreClosedAndSessionIsReady();
         }
 
         public void WaitForReady()
         {
-            this.clientSession.AwaitSessionIsReady();
+            this.ClientSession.AwaitSessionIsReady();
         }
 
         public IEnumerable<ClientLogicalForm> OpenedForms
         {
-            get { return this.clientSession.OpenedForms; }
+            get { return this.ClientSession.OpenedForms; }
         }
 
         /// <summary>"Catches" a new form opened (if any) during executions of <paramref name="action"/>.</summary>
@@ -75,7 +96,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <returns>The catch form. If no such form exists, returns null.</returns>
         public ClientLogicalForm CatchForm(Action action)
         {
-            return this.clientSession.CatchForm(action);
+            return this.ClientSession.CatchForm(action);
         }
 
         /// <summary>"Catches" a new lookup form opened (if any) during executions of <paramref name="action"/>.</summary>
@@ -83,7 +104,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <returns>The catch lookup form. If no such lookup form exists, returns null.</returns>
         public ClientLogicalForm CatchLookupForm(Action action)
         {
-            return this.clientSession.CatchLookupForm(action);
+            return this.ClientSession.CatchLookupForm(action);
         }
 
         /// <summary>"Catches" a Uri to show (if any) during executions of <paramref name="action"/>.</summary>
@@ -91,7 +112,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <returns>The catch uri to show. If no such URI exists, returns null.</returns>
         public string CatchUriToShow(Action action)
         {
-            return this.clientSession.CatchUriToShow(action);
+            return this.ClientSession.CatchUriToShow(action);
         }
 
         /// <summary>"Catches" a new dialog opened (if any) during executions of <paramref name="action"/>.</summary>
@@ -99,22 +120,18 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <returns>The catch dialog. If no such dialog exists, returns null.</returns>
         public ClientLogicalForm CatchDialog(Action action)
         {
-            return this.clientSession.CatchDialog(action);
+            return this.ClientSession.CatchDialog(action);
         }
 
         /// <summary>Inititialies a new <see cref="ClientSession"/>.</summary>
         /// <param name="serviceAddress">The service Address.</param>
-        /// <param name="tenantId">Tenant ID</param>
-        /// <param name="company">Company Name</param>
         /// <param name="authentication">The authentication.</param>
-        /// <param name="username">The username.</param>
         /// <param name="password">The password.</param>
         /// <returns>The initialize session.</returns>
-        public void InitializeSession(string serviceAddress, string tenantId, string company,
-            AuthenticationScheme? authentication = null, string username = null, string password = null)
+        public void InitializeSession(string serviceAddress)
         {
-            this.clientSession = ClientSessionExtensions.InitializeSession(serviceAddress, tenantId, company,
-                authentication, username, password);
+            this.clientSession = ClientSessionExtensions.InitializeSession(serviceAddress, this.TenantId, this.Company,
+                AuthenticationScheme, this.UserName, this.Password);
         }
 
         /// <summary>
@@ -123,7 +140,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <returns><c>true</c> is <see cref="clientSession"/> is open <c>false</c> otherwise</returns>
         public bool IsReadyOrBusy()
         {
-            return this.clientSession.IsReadyOrBusy();
+            return this.ClientSession.IsReadyOrBusy();
         }
 
         /// <summary>
@@ -133,7 +150,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <returns>The form opened.</returns>
         public ClientLogicalForm OpenForm(string formId)
         {
-            return this.clientSession.OpenForm(formId);
+            return this.ClientSession.OpenForm(formId);
         }
 
         /// <summary>
@@ -144,7 +161,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <exception cref="InvalidOperationException">If a dialog is shown that is not the Cronus dialog.</exception>
         public ClientLogicalForm OpenInitialForm(string formId)
         {
-            return this.clientSession.OpenInitialForm(formId);
+            return this.ClientSession.OpenInitialForm(formId);
         }
 
         public void ValidateForm(ClientLogicalForm form)

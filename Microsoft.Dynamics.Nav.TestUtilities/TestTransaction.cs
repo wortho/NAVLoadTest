@@ -78,13 +78,18 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
 
         public void Dispose()
         {
-            if (this.isDisposed)
-            {
-                return;
-            }
-
-            this.Leave();
-            this.isDisposed = true;
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                this.Leave();
+                this.isDisposed = true;
+            }
+        }
+
     }
 }

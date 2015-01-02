@@ -10,55 +10,7 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
 {
     public class TestScenario
     {
-        /// <summary>
-        /// Thread safety for UserContext creation
-        /// </summary>
-        private static readonly object Lockobj = new object();
-
-        /// <summary>
-        /// Delegate for creating a new UserContext
-        /// </summary>
-        /// <param name="testContext">The current Test Context</param>
-        /// <param name="tenantId">Tenant to use or null if no tenant pre-selected</param>
-        /// <param name="company">Company to use or null if no company pre-selected</param>
-        /// <param name="roleCenterId">Role Center to use for the user</param>
-        /// <param name="navServerUrl"></param>
-        /// <param name="scheme">Authentication Scheme</param>
-        /// <param name="navUsername">User Name</param>
-        /// <param name="navPassword">Password</param>
-        /// <returns>a new UserContext</returns>
-        public static UserContext CreateUserContext(TestContext testContext, string tenantId, string company, int? roleCenterId, string navServerUrl, AuthenticationScheme scheme, string navUsername = null, string navPassword = null)
-        {
-            lock (Lockobj)
-            {
-                if (tenantId == null)
-                {
-                    //TODO Select default tenant if running multiple tenants
-                }
-                if (company == null)
-                {
-                    //TODO: Select default company if running multiple companies
-                }
-
-                var userContext = new UserContext(tenantId, company);
-                using (new TestTransaction(testContext, "OpenSession"))
-                {
-                    userContext.InitializeSession(navServerUrl, tenantId, company, scheme, navUsername, navPassword);
-                    userContext.OpenSession();
-                }
-
-                if (roleCenterId.HasValue)
-                {
-                    using (new TestTransaction(testContext, "OpenRoleCenter"))
-                    {
-                        userContext.OpenRoleCenter(roleCenterId.Value);
-                    }
-                }
-
-                return userContext;
-            }
-        }
-
+       
         /// <summary>
         /// Run an end-to-end test scenario
         /// Ensure any opened forms are closed at the end of the scenario
@@ -69,14 +21,14 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <param name="actionName">the name of the scenario being performed</param>
         public static void Run(UserContextManager manager, TestContext testContext, Action<UserContext> action, string actionName = null)
         {
-            var userContext = manager.GetUserContext();
+            var userContext = manager.GetUserContext(testContext);
             var formCount = userContext.GetOpenFormCount();
             try
             {
                 action(userContext);
                 userContext.CheckOpenForms(formCount);
                 userContext.WaitForReady();
-                manager.ReturnUserContext(userContext);
+                manager.ReturnUserContext(testContext, userContext);
             }
             catch (Exception)
             {
@@ -176,28 +128,6 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
                 }
 
             }
-        }
-        
-        public static string GetUserNameFromTestContext(TestContext testContext)
-        {
-            LoadTestUserContext loadTestUserContext = GetLoadTestUserContext(testContext);
-            if (loadTestUserContext != null)
-            {
-                return String.Format("User{0}", loadTestUserContext.UserId);
-            }
-
-            // empty user name will use the configuration user name
-            return String.Empty;
-
-        }
-
-        private static LoadTestUserContext GetLoadTestUserContext(TestContext testContext)
-        {
-            if (testContext.Properties.Contains("$LoadTestUserContext"))
-            {
-                return testContext.Properties["$LoadTestUserContext"] as LoadTestUserContext;
-            }
-            return null;
         }
 
         public static string SelectRandomRecordFromListPage(TestContext testContext, int pageId, UserContext context, string keyFieldCaption)

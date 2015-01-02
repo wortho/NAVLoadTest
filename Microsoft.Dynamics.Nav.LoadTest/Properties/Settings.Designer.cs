@@ -50,14 +50,5 @@ namespace Microsoft.Dynamics.Nav.LoadTest.Properties {
                 return ((string)(this["NAVUserPassword"]));
             }
         }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Windows")]
-        public global::Microsoft.Dynamics.Framework.UI.Client.AuthenticationScheme NAVUserAuthenticationScheme {
-            get {
-                return ((global::Microsoft.Dynamics.Framework.UI.Client.AuthenticationScheme)(this["NAVUserAuthenticationScheme"]));
-            }
-        }
     }
 }
