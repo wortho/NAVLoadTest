@@ -9,6 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Dynamics.Nav.Load
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF878578-4CAD-46F0-B859-5C012167EBA7}"
 	ProjectSection(SolutionItems) = preProject
+		PSScripts\CreateUsers.ps1 = PSScripts\CreateUsers.ps1
 		LocalLoadTest.testsettings = LocalLoadTest.testsettings
 		Binaries\Microsoft.Dynamics.Framework.UI.Client.dll = Binaries\Microsoft.Dynamics.Framework.UI.Client.dll
 		Binaries\Microsoft.Dynamics.Framework.UI.Client.Net40.dll = Binaries\Microsoft.Dynamics.Framework.UI.Client.Net40.dll
