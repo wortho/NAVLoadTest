@@ -19,20 +19,10 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         private readonly string methodName;
 
         /// <summary>
-        /// Has the object been disposed.
-        /// </summary>
-        private bool isDisposed;
-
-        /// <summary>
         /// Has event tracing started.
         /// </summary>
         private bool isStarted;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the outcome is success or failure
-        /// </summary>
-        public bool Outcome { get; set; }
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="TestTransaction"/> class.
         /// </summary>
@@ -46,18 +36,19 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
             }
 
             this.context = testContext;
-            this.Outcome = true;
             this.methodName = testContext.TestName;
-            if (actionName != null)
+
+            // timers are only used in load tests
+            if (this.context.IsLoadTestContext())
             {
-                this.methodName = string.Format("{0}.{1}", testContext.TestName, actionName);
+                if (actionName != null)
+                {
+                    this.methodName = string.Format("{0}.{1}", testContext.TestName, actionName);
+                }
+                this.Enter();
             }
-            this.Enter();
         }
 
-        /// <summary>
-        /// Enter timeSpan. Invokes starting events.
-        /// </summary>
         private void Enter()
         {
             if (!this.isStarted)
@@ -87,7 +78,6 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
             if (disposing)
             {
                 this.Leave();
-                this.isDisposed = true;
             }
         }
 

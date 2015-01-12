@@ -146,17 +146,9 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <returns></returns>
         protected static int GetTestUserId(TestContext testContext)
         {
-            LoadTestUserContext loadTestUserContext = GetLoadTestUserContext(testContext);
+            LoadTestUserContext loadTestUserContext = testContext.GetLoadTestUserContext();
             return (loadTestUserContext != null) ? loadTestUserContext.UserId : 0;
         }
                 
-        protected static LoadTestUserContext GetLoadTestUserContext(TestContext testContext)
-        {
-            if (testContext.Properties.Contains("$LoadTestUserContext"))
-            {
-                return testContext.Properties["$LoadTestUserContext"] as LoadTestUserContext;
-            }
-            return null;
-        }
     }
 }

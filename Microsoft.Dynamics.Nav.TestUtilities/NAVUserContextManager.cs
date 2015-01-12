@@ -43,7 +43,7 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
 
         protected override string GetUserName(TestContext testContext)
         {
-            LoadTestUserContext loadTestUserContext = GetLoadTestUserContext(testContext);
+            LoadTestUserContext loadTestUserContext = testContext.GetLoadTestUserContext();
             if (loadTestUserContext != null)
             {
                 // add the load test user id as a suffix to the default user name 
