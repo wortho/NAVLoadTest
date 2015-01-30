@@ -161,7 +161,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             PostSalesOrder(userContext, newSalesOrderPage);
 
             // Close the page
-            userContext.InvokeInteraction(new CloseFormInteraction(newSalesOrderPage));
+            TestScenario.ClosePage(TestContext, userContext, newSalesOrderPage);
         }
 
         private void PostSalesOrder(UserContext userContext, ClientLogicalForm newSalesOrderPage)

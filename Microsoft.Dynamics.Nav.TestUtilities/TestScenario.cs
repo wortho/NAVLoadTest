@@ -10,7 +10,7 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
 {
     public class TestScenario
     {
-       
+
         /// <summary>
         /// Run an end-to-end test scenario
         /// Ensure any opened forms are closed at the end of the scenario
@@ -72,9 +72,12 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
 
         public static void ClosePage(TestContext testContext, UserContext context, ClientLogicalForm form)
         {
-            using (new TestTransaction(testContext, String.Format("ClosePage{0}", UserContext.GetActualPageNo(form))))
+            if (form.State == ClientLogicalFormState.Open)
             {
-                context.InvokeInteraction(new CloseFormInteraction(form));
+                using (new TestTransaction(testContext, String.Format("ClosePage{0}", UserContext.GetActualPageNo(form))))
+                {
+                    context.InvokeInteraction(new CloseFormInteraction(form));
+                }
             }
         }
         private static void CloseSession(UserContext userContext, TestContext testContext)
