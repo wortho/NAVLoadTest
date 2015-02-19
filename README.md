@@ -3,7 +3,7 @@ NAVLoadTest
 
 Dynamics NAV Load Test Framework with Sample Tests
 
-Enables you to creat scenario tests for Microsoft Dynamics NAV. 
+Enables you to create scenario tests for Microsoft Dynamics NAV. 
 The solution consists of:
 Microsoft.Dynamics.Nav.LoadTest : A sample test for NAV Order Processor Scenarios
 Microsoft.Dynamics.Nav.TestUtilities : Test utilities to help build test scenarios
