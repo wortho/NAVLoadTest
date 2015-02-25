@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LoadTest Name="OrderProcessor" Description="" Owner="" storage="c:\users\david\source\repos\microsoft.dynamics.nav.loadtest\microsoft.dynamics.nav.loadtest\orderprocessor.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Run Settings1" Id="fa74f8a5-071e-4010-8308-a196d65aaec2" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+<LoadTest Name="OrderProcessor" Description="" Owner="" storage="c:\users\david\source\repos\microsoft.dynamics.nav.loadtest\microsoft.dynamics.nav.loadtest\orderprocessor.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Local Run Settings" Id="fa74f8a5-071e-4010-8308-a196d65aaec2" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Scenarios>
     <Scenario Name="OrderProcessor" DelayBetweenIterations="1" PercentNewUsers="0" IPSwitching="false" TestMixType="UserPacing" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
-      <LoadProfile Pattern="Step" InitialUsers="1" MaxUsers="10" StepUsers="1" StepDuration="10" StepRampTime="1" />
+      <LoadProfile Pattern="Step" InitialUsers="1" MaxUsers="10" StepUsers="1" StepDuration="5" StepRampTime="1" />
       <TestMix>
         <TestProfile Name="CreateAndPostSalesOrder" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="0ccccaab-949d-ff08-f7c9-1f6c39ccaa4d" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
         <TestProfile Name="LookupRandomCustomer" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="124b6946-dda6-c20a-1373-971c02696515" Percentage="20" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -411,10 +411,76 @@
         <DefaultCounter CategoryName="Memory" CounterName="Available MBytes" InstanceName="" GraphName="" />
       </DefaultCountersForAutomaticGraphs>
     </CounterSet>
+    <CounterSet Name="NAVServer" CounterSetType="Fixed" LocId="">
+      <CounterCategories>
+        <CounterCategory Name="Process">
+          <Counters>
+            <Counter Name="% Processor Time" />
+            <Counter Name="Private Bytes" />
+            <Counter Name="Working Set" />
+            <Counter Name="Page Faults/sec" />
+          </Counters>
+          <Instances>
+            <Instance Name="Microsoft.Dynamics.Nav.Server" />
+            <Instance Name="sqlservr" />
+            <Instance Name="w3wp" />
+            <Instance Name="iisexpress" />
+          </Instances>
+        </CounterCategory>
+        <CounterCategory Name="Microsoft Dynamics NAV">
+          <Counters>
+            <Counter Name="# Open connections">
+              <ThresholdRules>
+                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                  <RuleParameters>
+                    <RuleParameter Name="AlertIfOver" Value="True" />
+                    <RuleParameter Name="WarningThreshold" Value="2" />
+                    <RuleParameter Name="CriticalThreshold" Value="4" />
+                    <RuleParameter Name="DependentMachine" Value="localhost" />
+                    <RuleParameter Name="DependentCategory" Value="LoadTest:Scenario" />
+                    <RuleParameter Name="DependentCounter" Value="User Load" />
+                    <RuleParameter Name="DependentInstance" Value="_Total" />
+                  </RuleParameters>
+                </ThresholdRule>
+              </ThresholdRules>
+            </Counter>
+            <Counter Name="% Calculated fields cache hit rate" />
+            <Counter Name="% Primary key cache hit rate" />
+            <Counter Name="% Result set cache hit rate" />
+            <Counter Name="Heartbeat time (ms)" />
+            <Counter Name="Server operations/sec" />
+            <Counter Name="# Active sessions" />
+            <Counter Name="Average server operation time (ms)" />
+          </Counters>
+          <Instances>
+            <Instance Name="*" />
+          </Instances>
+        </CounterCategory>
+        <CounterCategory Name="SQLServer:SQL Statistics">
+          <Counters>
+            <Counter Name="Batch Requests/sec" />
+          </Counters>
+        </CounterCategory>
+        <CounterCategory Name="SQLServer:General Statistics">
+          <Counters>
+            <Counter Name="User Connections" />
+          </Counters>
+        </CounterCategory>
+      </CounterCategories>
+      <DefaultCountersForAutomaticGraphs>
+        <DefaultCounter CategoryName="Processor" CounterName="% Processor Time" InstanceName="_Total" GraphName="" />
+        <DefaultCounter CategoryName="Memory" CounterName="Available MBytes" InstanceName="" GraphName="" />
+      </DefaultCountersForAutomaticGraphs>
+    </CounterSet>
   </CounterSets>
   <RunConfigurations>
-    <RunConfiguration Name="Run Settings1" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="0" MaxErrorDetails="200" MaxErrorsPerType="10" MaxThresholdViolations="100" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="600" WarmupTime="0" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="15" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0">
+    <RunConfiguration Name="Local Run Settings" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="0" MaxErrorDetails="200" MaxErrorsPerType="10" MaxThresholdViolations="100" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="600" WarmupTime="0" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="5" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0">
       <CounterSetMappings>
+        <CounterSetMapping ComputerName="DAVIDX1">
+          <CounterSetReferences>
+            <CounterSetReference CounterSetName="NAVServer" />
+          </CounterSetReferences>
+        </CounterSetMapping>
         <CounterSetMapping ComputerName="[CONTROLLER MACHINE]">
           <CounterSetReferences>
             <CounterSetReference CounterSetName="LoadTest" />
