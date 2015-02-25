@@ -44,6 +44,8 @@
 #*.png   binary
 #*.gif   binary
 
+Microsoft.Dynamics.Framework.UI.Client*.dll   binary
+
 ###############################################################################
 # diff behavior for common document formats
 # 
