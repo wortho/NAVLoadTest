@@ -2,14 +2,14 @@
 <SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Microsoft.Dynamics.Nav.LoadTest.Properties" GeneratedClassName="Settings">
   <Profiles />
   <Settings>
-    <Setting Name="NAVClientService" Type="(Web Service URL)" Scope="Application">
-      <Value Profile="(Default)">http://localhost:8080/DynamicsNAV80/WebClient/Services/ClientService.svc</Value>
-    </Setting>
     <Setting Name="NAVUserName" Type="System.String" Scope="Application">
       <Value Profile="(Default)">UserName</Value>
     </Setting>
     <Setting Name="NAVUserPassword" Type="System.String" Scope="Application">
       <Value Profile="(Default)">Password</Value>
+    </Setting>
+    <Setting Name="NAVClientService" Type="(Web Service URL)" Scope="Application">
+      <Value Profile="(Default)">http://localhost:8080/NAV/WebClient/Services/ClientService.svc</Value>
     </Setting>
   </Settings>
 </SettingsFile>
