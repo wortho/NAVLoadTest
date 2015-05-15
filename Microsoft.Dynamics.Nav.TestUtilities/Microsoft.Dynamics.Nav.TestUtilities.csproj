@@ -41,6 +41,7 @@
     <Reference Include="System.Windows" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NAVTenantUserContextManager.cs" />
     <Compile Include="TestContextExtensions.cs" />
     <Compile Include="WindowsUserContextManager.cs" />
     <Compile Include="SafeRandom.cs" />

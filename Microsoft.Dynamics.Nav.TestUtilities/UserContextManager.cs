@@ -16,23 +16,23 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
     {
         private ConcurrentDictionary<int, UserContext> UserContextPool { get; set; }
         public string NAVServerUrl { get; private set; }
-        public string TenantId { get; private set; }
+        public string DefaultTenantId { get; private set; }
         public string Company { get; private set; }
         public int? RoleCenterId { get; private set; }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="navServerUrl">URL for NAV ClientService</param>
-        /// <param name="tenantId">Tenant</param>
+        /// <param name="defaultTenantId">Tenant</param>
         /// <param name="companyName">Company</param>
         /// <param name="roleCenterId">Role Center to use for the users</param>
-        public UserContextManager(string navServerUrl, string tenantId, string companyName, int? roleCenterId)
+        protected UserContextManager(string navServerUrl, string defaultTenantId, string companyName, int? roleCenterId)
         {
             this.UserContextPool = new ConcurrentDictionary<int, UserContext>();
-            NAVServerUrl = navServerUrl;
-            this.TenantId = tenantId;
+            this.NAVServerUrl = navServerUrl;
+            this.DefaultTenantId = defaultTenantId;
             this.Company = companyName;
-            RoleCenterId = roleCenterId;
+            this.RoleCenterId = roleCenterId;
         }
 
         /// <summary>
