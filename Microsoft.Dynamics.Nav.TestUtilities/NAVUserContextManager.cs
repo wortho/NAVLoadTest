@@ -23,7 +23,6 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <param name="navServerUrl">URL for NAV ClientService</param>
         /// <param name="defaultTenantId">Default Tenant Id</param>
         /// <param name="companyName">Company</param>
-        /// <param name="authenticationScheme">Authentication Scheme</param>
         /// <param name="roleCenterId">Role Center to use for the users</param>
         /// <param name="defaultNAVUserName">Default User Name</param>
         /// <param name="defaultNAVPassword">Default Password</param>
