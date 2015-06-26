@@ -9,13 +9,29 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Dynamics.Nav.Load
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{EF878578-4CAD-46F0-B859-5C012167EBA7}"
 	ProjectSection(SolutionItems) = preProject
-		PSScripts\CreateUsers.ps1 = PSScripts\CreateUsers.ps1
+		PSScripts\DeleteNAVUserPersonalization.sql = PSScripts\DeleteNAVUserPersonalization.sql
 		LocalLoadTest.testsettings = LocalLoadTest.testsettings
 		Binaries\Microsoft.Dynamics.Framework.UI.Client.dll = Binaries\Microsoft.Dynamics.Framework.UI.Client.dll
 		Binaries\Microsoft.Dynamics.Framework.UI.Client.Net40.dll = Binaries\Microsoft.Dynamics.Framework.UI.Client.Net40.dll
+		PSScripts\RemoveUsers.ps1 = PSScripts\RemoveUsers.ps1
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Dynamics.Nav.TestUtilities", "Microsoft.Dynamics.Nav.TestUtilities\Microsoft.Dynamics.Nav.TestUtilities.csproj", "{2FC6BDA7-943C-4734-9D8E-427653C9A86D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{5226F406-1917-4265-8598-DF1DDD20D157}"
+	ProjectSection(SolutionItems) = preProject
+		PSScripts\CreateUsers.ps1 = PSScripts\CreateUsers.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Multitenant", "Multitenant", "{C5452BC5-6455-4B36-A325-4E82B800062B}"
+	ProjectSection(SolutionItems) = preProject
+		PSScripts\Multitenant\CreateCompanies.ps1 = PSScripts\Multitenant\CreateCompanies.ps1
+		PSScripts\Multitenant\CreateDefaultTenant.ps1 = PSScripts\Multitenant\CreateDefaultTenant.ps1
+		PSScripts\Multitenant\CreateTenantUsers.ps1 = PSScripts\Multitenant\CreateTenantUsers.ps1
+		PSScripts\Multitenant\MoveCompaniesToTenants.ps1 = PSScripts\Multitenant\MoveCompaniesToTenants.ps1
+		PSScripts\Multitenant\ShowTenants.ps1 = PSScripts\Multitenant\ShowTenants.ps1
+		PSScripts\Multitenant\ShowTenantUsers.ps1 = PSScripts\Multitenant\ShowTenantUsers.ps1
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -38,5 +54,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{C5452BC5-6455-4B36-A325-4E82B800062B} = {5226F406-1917-4265-8598-DF1DDD20D157}
 	EndGlobalSection
 EndGlobal

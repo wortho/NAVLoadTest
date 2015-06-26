@@ -40,12 +40,21 @@ namespace Microsoft.Dynamics.Nav.LoadTest
 
             // to use NAV User Password authentication for multiple users uncomment the following
             // orderProcessorUserContextManager = new NAVUserContextManager(
-            //        NavServerUrl,
+            //        NAVClientService,
             //        null,
             //        null,
             //        OrderProcessorRoleCenterId,
             //        NAVUserName,
             //        NAVPassword);
+
+            // to use NAV User Password authentication for multiple tenants uncomment the following
+            //orderProcessorUserContextManager = new NAVTenantUserContextManager(
+            //       NAVClientService,
+            //       "default",
+            //       null,
+            //       OrderProcessorRoleCenterId,
+            //       NAVUserName,
+            //       NAVPassword);
 
             return orderProcessorUserContextManager;
         }
@@ -148,8 +157,8 @@ namespace Microsoft.Dynamics.Nav.LoadTest
 
             userContext.ValidateForm(newSalesOrderPage);
 
-            // Add a random number of lines between 2 and 5
-            int noOfLines = SafeRandom.GetRandomNext(2, 6);
+            // Add a random number of lines between 2 and 25
+            int noOfLines = SafeRandom.GetRandomNext(2, 25);
             for (int line = 0; line < noOfLines; line++)
             {
                 AddSalesOrderLine(userContext, newSalesOrderPage, line);
@@ -189,10 +198,18 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             }
         }
 
-        private void AddSalesOrderLine(UserContext userContext, ClientLogicalForm newSalesOrderPage, int line)
+        private void AddSalesOrderLine(UserContext userContext, ClientLogicalForm newSalesOrderPage, int index)
         {
-            // Get Line
-            var itemsLine = newSalesOrderPage.Repeater().DefaultViewport[line];
+            var repeater = newSalesOrderPage.Repeater();
+            var rowCount = repeater.Offset + repeater.DefaultViewport.Count;
+            if (index >= rowCount)
+            {
+                // scroll to the next viewport
+                userContext.InvokeInteraction(new ScrollRepeaterInteraction(repeater, 1));
+            }
+
+            var rowIndex = (index % repeater.DefaultViewport.Count);
+            var itemsLine = repeater.DefaultViewport[rowIndex];
 
             // Activate Type field
             itemsLine.Control("Type").Activate();

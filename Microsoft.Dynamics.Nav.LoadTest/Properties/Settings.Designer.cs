@@ -25,16 +25,6 @@ namespace Microsoft.Dynamics.Nav.LoadTest.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
-        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:8080/DynamicsNAV80/WebClient/Services/ClientService.svc")]
-        public string NAVClientService {
-            get {
-                return ((string)(this["NAVClientService"]));
-            }
-        }
-        
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("UserName")]
         public string NAVUserName {
             get {
@@ -48,6 +38,16 @@ namespace Microsoft.Dynamics.Nav.LoadTest.Properties {
         public string NAVUserPassword {
             get {
                 return ((string)(this["NAVUserPassword"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.SpecialSettingAttribute(global::System.Configuration.SpecialSetting.WebServiceUrl)]
+        [global::System.Configuration.DefaultSettingValueAttribute("http://localhost:8080/NAV/WebClient/Services/ClientService.svc")]
+        public string NAVClientService {
+            get {
+                return ((string)(this["NAVClientService"]));
             }
         }
     }

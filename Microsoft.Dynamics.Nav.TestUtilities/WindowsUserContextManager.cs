@@ -15,17 +15,17 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// Creates the WindowsUserContextManager for a given tenant/company/user
         /// </summary>
         /// <param name="navServerUrl">URL for NAV ClientService</param>
-        /// <param name="tenantId">Tenant</param>
+        /// <param name="defaultTenantId">Tenant</param>
         /// <param name="companyName">Company</param>
         /// <param name="roleCenterId">Role Center to use for the users</param>
-        public WindowsUserContextManager(string navServerUrl, string tenantId, string companyName, int? roleCenterId)
-            : base(navServerUrl, tenantId, companyName, roleCenterId){}
+        public WindowsUserContextManager(string navServerUrl, string defaultTenantId, string companyName, int? roleCenterId)
+            : base(navServerUrl, defaultTenantId, companyName, roleCenterId){}
 
 
         protected override UserContext CreateUserContext(TestContext testContext)
         {
             var userName = GetUserName(testContext);
-            var userContext = new UserContext(TenantId, Company, AuthenticationScheme.Windows, userName);
+            var userContext = new UserContext(DefaultTenantId, Company, AuthenticationScheme.Windows, userName);
             return userContext;
         }
 

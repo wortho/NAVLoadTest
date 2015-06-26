@@ -16,23 +16,24 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
     {
         private ConcurrentDictionary<int, UserContext> UserContextPool { get; set; }
         public string NAVServerUrl { get; private set; }
-        public string TenantId { get; private set; }
+        public string DefaultTenantId { get; private set; }
         public string Company { get; private set; }
         public int? RoleCenterId { get; private set; }
+
         /// <summary>
-        /// 
+        /// Create the UserContextManager for the specified server/tenant/company
         /// </summary>
         /// <param name="navServerUrl">URL for NAV ClientService</param>
-        /// <param name="tenantId">Tenant</param>
+        /// <param name="defaultTenantId">Tenant</param>
         /// <param name="companyName">Company</param>
         /// <param name="roleCenterId">Role Center to use for the users</param>
-        public UserContextManager(string navServerUrl, string tenantId, string companyName, int? roleCenterId)
+        protected UserContextManager(string navServerUrl, string defaultTenantId, string companyName, int? roleCenterId)
         {
             this.UserContextPool = new ConcurrentDictionary<int, UserContext>();
-            NAVServerUrl = navServerUrl;
-            this.TenantId = tenantId;
+            this.NAVServerUrl = navServerUrl;
+            this.DefaultTenantId = defaultTenantId;
             this.Company = companyName;
-            RoleCenterId = roleCenterId;
+            this.RoleCenterId = roleCenterId;
         }
 
         /// <summary>
@@ -47,28 +48,31 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <returns>a new UserContext</returns>
         private UserContext CreateSession(TestContext testContext)
         {
-            lock (Lockobj)
+            using (new TestTransaction(testContext, "CreateSession"))
             {
-                var userContext = CreateUserContext(testContext);
-                using (new TestTransaction(testContext, "InitializeSession"))
+                lock (Lockobj)
                 {
-                    userContext.InitializeSession(NAVServerUrl);
-                }
-
-                using (new TestTransaction(testContext, "OpenSession"))
-                {
-                    userContext.OpenSession();
-                }
-
-                if (RoleCenterId.HasValue)
-                {
-                    using (new TestTransaction(testContext, "OpenRoleCenter"))
+                    var userContext = CreateUserContext(testContext);
+                    using (new TestTransaction(testContext, "InitializeSession"))
                     {
-                        userContext.OpenRoleCenter(RoleCenterId.Value);
+                        userContext.InitializeSession(NAVServerUrl);
                     }
-                }
 
-                return userContext;
+                    using (new TestTransaction(testContext, "OpenSession"))
+                    {
+                        userContext.OpenSession();
+                    }
+
+                    if (RoleCenterId.HasValue)
+                    {
+                        using (new TestTransaction(testContext, "OpenRoleCenter"))
+                        {
+                            userContext.OpenRoleCenter(RoleCenterId.Value);
+                        }
+                    }
+
+                    return userContext;
+                }
             }
         }
         
@@ -79,9 +83,8 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <returns></returns>
         public UserContext GetUserContext(TestContext testContext)
         {
-            string userName = GetUserName(testContext);
-            UserContext userContext = CreateUserContext(testContext);
-            int userId = GetTestUserId(testContext);
+            UserContext userContext;
+            var userId = GetTestUserId(testContext);
             if (this.UserContextPool.TryRemove(userId, out userContext))
             {
                 return userContext;
