@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Dynamics.Nav.UserSession", "Microsoft.Dynamics.Nav.UserSession\Microsoft.Dynamics.Nav.UserSession.csproj", "{FB75EE9A-A002-49CA-8891-C7C58C62EFB7}"
 EndProject
@@ -12,7 +12,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		PSScripts\DeleteNAVUserPersonalization.sql = PSScripts\DeleteNAVUserPersonalization.sql
 		LocalLoadTest.testsettings = LocalLoadTest.testsettings
 		Binaries\Microsoft.Dynamics.Framework.UI.Client.dll = Binaries\Microsoft.Dynamics.Framework.UI.Client.dll
-		Binaries\Microsoft.Dynamics.Framework.UI.Client.Net40.dll = Binaries\Microsoft.Dynamics.Framework.UI.Client.Net40.dll
 		PSScripts\RemoveUsers.ps1 = PSScripts\RemoveUsers.ps1
 	EndProjectSection
 EndProject
