@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LoadTest Name="OrderProcessor" Description="" Owner="" storage="c:\users\david\source\repos\microsoft.dynamics.nav.loadtest\microsoft.dynamics.nav.loadtest\orderprocessor.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Local Run Settings" Id="fa74f8a5-071e-4010-8308-a196d65aaec2" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+<LoadTest Name="OrderProcessor" Description="" Owner="" storage="c:\users\david\source\repos\navperf\navloadtest\microsoft.dynamics.nav.loadtest\orderprocessor.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Local Run Settings" Id="fa74f8a5-071e-4010-8308-a196d65aaec2" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Scenarios>
     <Scenario Name="OrderProcessor" DelayBetweenIterations="1" PercentNewUsers="0" IPSwitching="false" TestMixType="UserPacing" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
@@ -456,16 +456,6 @@
             <Instance Name="*" />
           </Instances>
         </CounterCategory>
-        <CounterCategory Name="SQLServer:SQL Statistics">
-          <Counters>
-            <Counter Name="Batch Requests/sec" />
-          </Counters>
-        </CounterCategory>
-        <CounterCategory Name="SQLServer:General Statistics">
-          <Counters>
-            <Counter Name="User Connections" />
-          </Counters>
-        </CounterCategory>
       </CounterCategories>
       <DefaultCountersForAutomaticGraphs>
         <DefaultCounter CategoryName="Processor" CounterName="% Processor Time" InstanceName="_Total" GraphName="" />
@@ -476,7 +466,7 @@
   <RunConfigurations>
     <RunConfiguration Name="Local Run Settings" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="0" MaxErrorDetails="200" MaxErrorsPerType="10" MaxThresholdViolations="100" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="600" WarmupTime="0" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="5" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0">
       <CounterSetMappings>
-        <CounterSetMapping ComputerName="DAVIDX1">
+        <CounterSetMapping ComputerName="localhost">
           <CounterSetReferences>
             <CounterSetReference CounterSetName="NAVServer" />
           </CounterSetReferences>
