@@ -208,7 +208,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                 userContext.InvokeInteraction(new ScrollRepeaterInteraction(repeater, 1));
             }
 
-            var rowIndex = (index % repeater.DefaultViewport.Count);
+            var rowIndex = (int)(index - repeater.Offset);
             var itemsLine = repeater.DefaultViewport[rowIndex];
 
             // Activate Type field
