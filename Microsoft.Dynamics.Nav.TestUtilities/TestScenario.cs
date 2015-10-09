@@ -3,7 +3,6 @@ using System.Globalization;
 using Microsoft.Dynamics.Framework.UI.Client;
 using Microsoft.Dynamics.Framework.UI.Client.Interactions;
 using Microsoft.Dynamics.Nav.UserSession;
-using Microsoft.VisualStudio.TestTools.LoadTesting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Microsoft.Dynamics.Nav.TestUtilities
@@ -129,22 +128,64 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
                     context.WriteLine("Dialog Caption: {0} Message: {1} Action: {2} was not found.", dialog.Caption, dialog.FindMessage(), ignoreAction);
                     throw;
                 }
-
             }
         }
 
-        public static string SelectRandomRecordFromListPage(TestContext testContext, int pageId, UserContext context, string keyFieldCaption)
+        public static string SelectRandomRecordFromListPage(
+            TestContext testContext,
+            UserContext context,
+            int pageId,
+            string keyFieldCaption)
         {
             string randomKey = null;
             RunPageAction(testContext, context, pageId, form =>
             {
-                // selects a random row from the first page of results
-                int rowCount = form.Repeater().DefaultViewport.Count;
-                int rowToSelect = SafeRandom.GetRandomNext(rowCount);
-                var rowControl = form.Repeater().DefaultViewport[rowToSelect];
-                randomKey = rowControl.Control(keyFieldCaption).StringValue;
-                testContext.WriteLine("Selected Random Record Page:{0} Key:{1} Value:{2}", pageId, keyFieldCaption, randomKey);
+                randomKey = SelectRandomRecord(form, keyFieldCaption);
+                testContext.WriteLine(
+                "Selected Random Record from Page:{0} Key:{1} Value:{2}",
+                pageId,
+                keyFieldCaption,
+                randomKey);
             });
+            return randomKey;
+        }
+
+        public static string SelectRandomRecordFromLookup(
+            TestContext testContext,
+            UserContext context,
+            ClientLogicalControl control,
+            string keyFieldCaption)
+        {
+            var form = control.InvokeCatchLookup();
+            if (form == null)
+            {
+                throw new InvalidOperationException("No Lookup Form found");
+            }
+            try
+            {
+                var randomKey = SelectRandomRecord(form, keyFieldCaption);
+                testContext.WriteLine(
+                "Selected Random Record from Lookup:{0} Key:{1} Value:{2}",
+                control.Caption,
+                keyFieldCaption,
+                randomKey);
+                return randomKey;
+            }
+            finally
+            {
+                ClosePage(testContext, context, form);
+            }
+        }
+
+        public static string SelectRandomRecord(
+            ClientLogicalForm form,
+            string keyFieldCaption)
+        {
+            // selects a random row from the repeater
+            var rowCount = form.Repeater().DefaultViewport.Count;
+            var rowToSelect = SafeRandom.GetRandomNext(rowCount);
+            var rowControl = form.Repeater().DefaultViewport[rowToSelect];
+            var randomKey = rowControl.Control(keyFieldCaption).StringValue;
             return randomKey;
         }
     }
