@@ -49,7 +49,9 @@ namespace Microsoft.Dynamics.Nav.UserSession
         public static ClientLogicalForm InvokeCatchLookup(this ClientLogicalControl control)
         {
             var rootForm = control.GetRootForm();
-            return rootForm.Session.CatchLookupForm(() => rootForm.Session.InvokeInteraction(new InvokeActionInteraction(control)));
+            return rootForm.Session.CatchLookupForm(() => 
+                rootForm.Session.InvokeInteraction(
+                    new InvokeActionInteraction(control, SystemAction.Lookup)));
         }
 
         /// <summary>Save a value for the control.</summary>
