@@ -1,4 +1,7 @@
-﻿using Microsoft.Dynamics.Nav.LoadTest.Properties;
+﻿using System.Globalization;
+using Microsoft.Dynamics.Framework.UI.Client;
+using Microsoft.Dynamics.Framework.UI.Client.Interactions;
+using Microsoft.Dynamics.Nav.LoadTest.Properties;
 using Microsoft.Dynamics.Nav.TestUtilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Dynamics.Nav.UserSession;
@@ -35,7 +38,6 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             return userContextManager;
         }
         
-
         [TestMethod]
         public void OpenCloseMiniPurchaseInvoiceList()
         {
@@ -51,7 +53,9 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                         MiniPurchaseInvoiceList,
                         form =>
                         {
-                            TestContext.WriteLine("Page Caption {0}", form.Caption);
+                            TestContext.WriteLine(
+                                "Page Caption {0}",
+                                form.Caption);
                         });
                 });
         }
@@ -66,7 +70,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                 userContext =>
                 {
                     // Invoke using the Purchase Invoice action on Role Center and catch the new page
-                    var newPurchaseInvoiceForm = userContext.EnsurePage(
+                    var newPurchaseInvoicePage = userContext.EnsurePage(
                         MiniPurchaseInvoiceCard,
                         userContext.RoleCenterPage.Action("Purchase Invoice")
                             .InvokeCatchForm());
@@ -80,13 +84,52 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                     TestScenario.SaveValueAndIgnoreWarning(
                         TestContext,
                         userContext,
-                        newPurchaseInvoiceForm.Control("Vendor Name"),
+                        newPurchaseInvoicePage.Control("Vendor Name"),
                         vendorName);
 
-                    TestContext.WriteLine("Created Purchase Invoice {0}", newPurchaseInvoiceForm.Caption);
+                    TestScenario.SaveValueWithDelay(
+                        newPurchaseInvoicePage.Control("Vendor Invoice No."),
+                        "999999");
 
-                    TestScenario.ClosePage(TestContext, userContext, newPurchaseInvoiceForm);
+                    // Add a random number of lines between 2 and 15
+                    var noOfLines = SafeRandom.GetRandomNext(2, 15);
+                    for (var line = 0; line < noOfLines; line++)
+                    {
+                        AddPurchaseLine(userContext, newPurchaseInvoicePage, line);
+                    }
+
+                    userContext.ValidateForm(newPurchaseInvoicePage);
+                    TestContext.WriteLine(
+                        "Created Purchase Invoice {0}",
+                        newPurchaseInvoicePage.Caption);
+                    TestScenario.ClosePage(
+                        TestContext,
+                        userContext,
+                        newPurchaseInvoicePage);
                 });
+        }
+
+
+        private void AddPurchaseLine(UserContext userContext, ClientLogicalForm purchaseInvoicePage, int index)
+        {
+            var repeater = purchaseInvoicePage.Repeater();
+            var rowCount = repeater.Offset + repeater.DefaultViewport.Count;
+            if (index >= rowCount)
+            {
+                // scroll to the next viewport
+                userContext.InvokeInteraction(new ScrollRepeaterInteraction(repeater, 1));
+            }
+
+            var rowIndex = (int)(index - repeater.Offset);
+            var itemsLine = repeater.DefaultViewport[rowIndex];
+            
+            // select random Item No. from  lookup
+            var itemNoControl = itemsLine.Control("Item No.");
+            var itemNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, itemNoControl, "No.");
+            TestScenario.SaveValueWithDelay(itemNoControl, itemNo);
+
+            var qtyToOrder = SafeRandom.GetRandomNext(1, 10).ToString(CultureInfo.InvariantCulture);
+            TestScenario.SaveValueWithDelay(itemsLine.Control("Quantity"), qtyToOrder);
         }
 
         [ClassCleanup]
