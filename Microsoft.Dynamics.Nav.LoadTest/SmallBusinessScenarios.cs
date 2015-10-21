@@ -1,5 +1,4 @@
-﻿using System.Globalization;
-using Microsoft.Dynamics.Framework.UI.Client;
+﻿using Microsoft.Dynamics.Framework.UI.Client;
 using Microsoft.Dynamics.Framework.UI.Client.Interactions;
 using Microsoft.Dynamics.Nav.LoadTest.Properties;
 using Microsoft.Dynamics.Nav.TestUtilities;
@@ -16,6 +15,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private const int SmallBusinessRoleCentre = 9022;
         private const int MiniPurchaseInvoiceList = 1356;
         private const int MiniPurchaseInvoiceCard = 1354;
+        private const int PostedPurchaseInvoiceCard = 1357;
         private const int MiniVendorList = 1331;
 
         private static UserContextManager userContextManager;
@@ -61,75 +61,132 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         }
 
         [TestMethod]
-        public void CreateNewPurchaseOrder()
+        public void CreateAndPostPurchaseInvoice()
         {
-            // Create a new Purchase Order
+            // Create a new Purchase Invoice
             TestScenario.Run(
                 UserContextManager,
                 TestContext,
                 userContext =>
                 {
-                    // Invoke using the Purchase Invoice action on Role Center and catch the new page
-                    var newPurchaseInvoicePage = userContext.EnsurePage(
-                        MiniPurchaseInvoiceCard,
-                        userContext.RoleCenterPage.Action("Purchase Invoice")
-                            .InvokeCatchForm());
-
-                    var vendorName = TestScenario.SelectRandomRecordFromListPage(
-                        TestContext,
-                        userContext,
-                        MiniVendorList,
-                        "Name");
-
-                    TestScenario.SaveValueAndIgnoreWarning(
-                        TestContext,
-                        userContext,
-                        newPurchaseInvoicePage.Control("Vendor Name"),
-                        vendorName);
-
-                    TestScenario.SaveValueWithDelay(
-                        newPurchaseInvoicePage.Control("Vendor Invoice No."),
-                        "999999");
-
-                    // Add a random number of lines between 2 and 15
-                    var noOfLines = SafeRandom.GetRandomNext(2, 15);
-                    for (var line = 0; line < noOfLines; line++)
-                    {
-                        AddPurchaseLine(userContext, newPurchaseInvoicePage, line);
-                    }
-
-                    userContext.ValidateForm(newPurchaseInvoicePage);
-                    TestContext.WriteLine(
-                        "Created Purchase Invoice {0}",
-                        newPurchaseInvoicePage.Caption);
-                    TestScenario.ClosePage(
-                        TestContext,
-                        userContext,
-                        newPurchaseInvoicePage);
+                    var newPurchaseInvoicePage = CreateNewPurchaseInvoice(userContext);
+                    PostPurchaseInvoice(userContext, newPurchaseInvoicePage);
                 });
         }
 
-
-        private void AddPurchaseLine(UserContext userContext, ClientLogicalForm purchaseInvoicePage, int index)
+        private ClientLogicalForm CreateNewPurchaseInvoice(UserContext userContext)
         {
-            var repeater = purchaseInvoicePage.Repeater();
-            var rowCount = repeater.Offset + repeater.DefaultViewport.Count;
-            if (index >= rowCount)
+            // Invoke using the Purchase Invoice action on Role Center and catch the new page
+            var newPurchaseInvoicePage = userContext.EnsurePage(
+                MiniPurchaseInvoiceCard,
+                userContext.RoleCenterPage.Action("Purchase Invoice")
+                    .InvokeCatchForm());
+
+            var vendorName = TestScenario.SelectRandomRecordFromListPage(
+                TestContext,
+                userContext,
+                MiniVendorList,
+                "Name");
+
+            TestScenario.SaveValueAndIgnoreWarning(
+                TestContext,
+                userContext,
+                newPurchaseInvoicePage.Control("Vendor Name"),
+                vendorName);
+
+            var vendorInvoiceNo = SafeRandom.GetRandomNext(100000, 999999);
+            TestScenario.SaveValueWithDelay(
+                newPurchaseInvoicePage.Control("Vendor Invoice No."),
+                vendorInvoiceNo);
+
+            // Add a random number of lines between 2 and 15
+            var noOfLines = SafeRandom.GetRandomNext(2, 15);
+            for (var line = 0; line < noOfLines; line++)
             {
-                // scroll to the next viewport
-                userContext.InvokeInteraction(new ScrollRepeaterInteraction(repeater, 1));
+                AddPurchaseInvoiceLine(userContext, newPurchaseInvoicePage, line);
             }
 
-            var rowIndex = (int)(index - repeater.Offset);
-            var itemsLine = repeater.DefaultViewport[rowIndex];
-            
-            // select random Item No. from  lookup
-            var itemNoControl = itemsLine.Control("Item No.");
-            var itemNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, itemNoControl, "No.");
-            TestScenario.SaveValueWithDelay(itemNoControl, itemNo);
+            userContext.ValidateForm(newPurchaseInvoicePage);
+            TestContext.WriteLine(
+                "Created Purchase Invoice {0}",
+                newPurchaseInvoicePage.Caption);
+            return newPurchaseInvoicePage;
+        }
 
-            var qtyToOrder = SafeRandom.GetRandomNext(1, 10).ToString(CultureInfo.InvariantCulture);
-            TestScenario.SaveValueWithDelay(itemsLine.Control("Quantity"), qtyToOrder);
+
+        private void AddPurchaseInvoiceLine(
+            UserContext userContext,
+            ClientLogicalForm purchaseInvoicePage,
+            int index)
+        {
+            using (new TestTransaction(TestContext, "AddPurchaseInvoiceLine"))
+            {
+                var repeater = purchaseInvoicePage.Repeater();
+                var rowCount = repeater.Offset + repeater.DefaultViewport.Count;
+                if (index >= rowCount)
+                {
+                    // scroll to the next viewport
+                    userContext.InvokeInteraction(
+                        new ScrollRepeaterInteraction(repeater, 1));
+                }
+
+                var rowIndex = (int) (index - repeater.Offset);
+                var itemsLine = repeater.DefaultViewport[rowIndex];
+
+                // select random Item No. from  lookup
+                var itemNoControl = itemsLine.Control("Item No.");
+                var itemNo = TestScenario.SelectRandomRecordFromLookup(
+                    TestContext,
+                    userContext,
+                    itemNoControl,
+                    "No.");
+                TestScenario.SaveValueWithDelay(itemNoControl, itemNo);
+
+                var qtyToOrder = SafeRandom.GetRandomNext(1, 10);
+                TestScenario.SaveValueWithDelay(itemsLine.Control("Quantity"), qtyToOrder);
+            }
+        }
+
+        private void PostPurchaseInvoice(
+            UserContext userContext,
+            ClientLogicalForm purchaseInvoicePage)
+        {
+            ClientLogicalForm openPostedInvoiceDialog;
+            using (new TestTransaction(TestContext, "Post"))
+            {
+                var postConfirmationDialog = purchaseInvoicePage.Action("Post")
+                    .InvokeCatchDialog();
+                if (postConfirmationDialog == null)
+                {
+                    userContext.ValidateForm(purchaseInvoicePage);
+                    Assert.Fail("Confirm Post dialog not found");
+                }
+                openPostedInvoiceDialog = postConfirmationDialog.Action("Yes")
+                    .InvokeCatchDialog();
+            }
+
+            if (openPostedInvoiceDialog == null)
+            {
+                Assert.Fail("Open Posted Invoice dialog not found");
+            }
+
+            ClientLogicalForm postedPurchaseInvoicePage;
+            using (new TestTransaction(TestContext, "OpenPostedPurchaseInvoice"))
+            {
+                postedPurchaseInvoicePage = userContext.EnsurePage(
+                        PostedPurchaseInvoiceCard,
+                        openPostedInvoiceDialog.Action("Yes").InvokeCatchForm());
+
+            }
+
+            TestContext.WriteLine(
+                    "Posted Purchase Invoice {0}",
+                    postedPurchaseInvoicePage.Caption);
+
+            TestScenario.ClosePage(
+                TestContext,
+                userContext,
+                postedPurchaseInvoicePage);
         }
 
         [ClassCleanup]
