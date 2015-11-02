@@ -188,5 +188,22 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
             var randomKey = rowControl.Control(keyFieldCaption).StringValue;
             return randomKey;
         }
+
+        public static void ApplyColumnFilter(
+            TestContext testContext,
+            UserContext userContext,
+            ClientRepeaterColumnControl column,
+            string value)
+        {
+            using (new TestTransaction(testContext, "FilterBy" + column.Caption))
+            {
+                var filterForm = column.Action("Filter...").InvokeCatchDialog();
+                var filterControl = filterForm.Control(column.Caption);
+                filterControl.SaveValue(value);
+                userContext.InvokeInteraction(
+                    new InvokeActionInteraction(
+                        filterForm.Action("OK")));
+            }
+        }
     }
 }
