@@ -31,21 +31,21 @@ namespace Microsoft.Dynamics.Nav.LoadTest
 
         private UserContextManager CreateUserContextManager()
         {
-            // Use the current windows user 
-            orderProcessorUserContextManager = new WindowsUserContextManager(
-                    NAVClientService,
-                    null,
-                    null,
-                    OrderProcessorRoleCenterId);
+            // use NAV User Password authentication
+            orderProcessorUserContextManager = new NAVUserContextManager(
+                   NAVClientService,
+                   null,
+                   null,
+                   OrderProcessorRoleCenterId,
+                   NAVUserName,
+                   NAVPassword);
 
-            // to use NAV User Password authentication for multiple users uncomment the following
-            // orderProcessorUserContextManager = new NAVUserContextManager(
+            // Use the current windows user uncomment the following
+            //orderProcessorUserContextManager = new WindowsUserContextManager(
             //        NAVClientService,
             //        null,
             //        null,
-            //        OrderProcessorRoleCenterId,
-            //        NAVUserName,
-            //        NAVPassword);
+            //        OrderProcessorRoleCenterId);
 
             // to use NAV User Password authentication for multiple tenants uncomment the following
             //orderProcessorUserContextManager = new NAVTenantUserContextManager(
@@ -122,7 +122,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             TestScenario.Run(OrderProcessorUserContextManager, TestContext,
                 userContext =>
                 {
-                    string custNo = TestScenario.SelectRandomRecordFromListPage(this.TestContext, CustomerListPageId, userContext, "No.");
+                    string custNo = TestScenario.SelectRandomRecordFromListPage(this.TestContext, userContext, CustomerListPageId, "No.");
                     Assert.IsNotNull(custNo, "No customer selected");
                 });
         }
@@ -135,9 +135,6 @@ namespace Microsoft.Dynamics.Nav.LoadTest
 
         public void RunCreateAndPostSalesOrder(UserContext userContext)
         {
-            // select a random customer
-            var custno = TestScenario.SelectRandomRecordFromListPage(TestContext, CustomerListPageId, userContext, "No.");
-
             // Invoke using the new sales order action on Role Center
             var newSalesOrderPage = userContext.EnsurePage(SalesOrderPageId, userContext.RoleCenterPage.Action("Sales Order").InvokeCatchForm());
 
@@ -145,21 +142,23 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             newSalesOrderPage.Control("No.").Activate();
 
             // Navigate to Sell-to Customer No. field in order to create record
-            newSalesOrderPage.Control("Sell-to Customer No.").Activate();
+            var sellToCustControl = newSalesOrderPage.Control("Sell-to Customer No.");
+            sellToCustControl.Activate();
 
-            var newSalesOrderNo = newSalesOrderPage.Control("No.").StringValue;
-            TestContext.WriteLine("Created Sales Order No. {0}", newSalesOrderNo);
-
+            // select a random customer from Sell-to Customer No. lookup
+            var custNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, sellToCustControl, "No.");
+            
             // Set Sell-to Customer No. to a Random Customer and ignore any credit warning
-            TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, newSalesOrderPage.Control("Sell-to Customer No."), custno);
+            TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, sellToCustControl, custNo);
 
-            TestScenario.SaveValueWithDelay(newSalesOrderPage.Control("External Document No."), custno);
-
+            TestScenario.SaveValueWithDelay(newSalesOrderPage.Control("External Document No."), custNo);
+            var newSalesOrderNo = newSalesOrderPage.Control("No.").StringValue;
             userContext.ValidateForm(newSalesOrderPage);
+            TestContext.WriteLine("Created Sales Order No. {0} for Cust No. {1}", newSalesOrderNo, custNo);
 
             // Add a random number of lines between 2 and 25
-            int noOfLines = SafeRandom.GetRandomNext(2, 25);
-            for (int line = 0; line < noOfLines; line++)
+            var noOfLines = SafeRandom.GetRandomNext(2, 25);
+            for (var line = 0; line < noOfLines; line++)
             {
                 AddSalesOrderLine(userContext, newSalesOrderPage, line);
             }
@@ -167,6 +166,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             // Check Validation errors
             userContext.ValidateForm(newSalesOrderPage);
 
+            // Post the order
             PostSalesOrder(userContext, newSalesOrderPage);
 
             // Close the page
@@ -208,7 +208,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                 userContext.InvokeInteraction(new ScrollRepeaterInteraction(repeater, 1));
             }
 
-            var rowIndex = (index % repeater.DefaultViewport.Count);
+            var rowIndex = (int)(index - repeater.Offset);
             var itemsLine = repeater.DefaultViewport[rowIndex];
 
             // Activate Type field
@@ -217,11 +217,12 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             // set Type = Item
             TestScenario.SaveValueWithDelay(itemsLine.Control("Type"), "Item");
 
-            // Set Item No.
-            var itemNo = TestScenario.SelectRandomRecordFromListPage(TestContext, ItemListPageId, userContext, "No.");
-            TestScenario.SaveValueWithDelay(itemsLine.Control("No."), itemNo);
+            // Set Item No. from random lookup
+            var itemNoControl = itemsLine.Control("No.");
+            var itemNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, itemNoControl, "No.");
+            TestScenario.SaveValueWithDelay(itemNoControl, itemNo);
 
-            string qtyToOrder = SafeRandom.GetRandomNext(1, 10).ToString(CultureInfo.InvariantCulture);
+            var qtyToOrder = SafeRandom.GetRandomNext(1, 10).ToString(CultureInfo.InvariantCulture);
 
             TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, itemsLine.Control("Quantity"), qtyToOrder);
 

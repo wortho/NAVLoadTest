@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.ServiceModel;
 using Microsoft.Dynamics.Framework.UI.Client;
 using Microsoft.Dynamics.Framework.UI.Client.Interactions;
-using Microsoft.Dynamics.Framework.UI.Client.WcfClient;
+using System.Net;
 
 namespace Microsoft.Dynamics.Nav.UserSession
 {
@@ -31,7 +30,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <param name="clientSession">The client Session.</param>
         public static void OpenSession(this ClientSession clientSession)
         {
-            var sessionParameters = new ClientSessionParameters {CultureId = CultureInfo.CurrentCulture.Name};
+            var sessionParameters = new ClientSessionParameters { CultureId = CultureInfo.CurrentCulture.Name };
             sessionParameters.AdditionalSettings.Add("IncludeControlIdentifier", true);
             clientSession.AwaitReady(() => clientSession.OpenSessionAsync(sessionParameters));
         }
@@ -90,7 +89,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         public static ClientLogicalForm CatchForm(this ClientSession clientSession, Action action)
         {
             ClientLogicalForm form = null;
-            EventHandler<ClientFormToShowEventArgs> clientSessionOnFormToShow = delegate(object sender, ClientFormToShowEventArgs args) { form = args.FormToShow; };
+            EventHandler<ClientFormToShowEventArgs> clientSessionOnFormToShow = delegate (object sender, ClientFormToShowEventArgs args) { form = args.FormToShow; };
             clientSession.FormToShow += clientSessionOnFormToShow;
             try
             {
@@ -111,7 +110,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         public static ClientLogicalForm CatchLookupForm(this ClientSession clientSession, Action action)
         {
             ClientLogicalForm form = null;
-            EventHandler<ClientLookupFormToShowEventArgs> clientSessionOnLookupFormToShow = delegate(object sender, ClientLookupFormToShowEventArgs args) { form = args.LookupFormToShow; };
+            EventHandler<ClientLookupFormToShowEventArgs> clientSessionOnLookupFormToShow = delegate (object sender, ClientLookupFormToShowEventArgs args) { form = args.LookupFormToShow; };
             clientSession.LookupFormToShow += clientSessionOnLookupFormToShow;
             try
             {
@@ -132,7 +131,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
         public static string CatchUriToShow(this ClientSession clientSession, Action action)
         {
             string uri = null;
-            EventHandler<ClientUriToShowEventArgs> clientSessionOnUriToShow = delegate(object sender, ClientUriToShowEventArgs args)
+            EventHandler<ClientUriToShowEventArgs> clientSessionOnUriToShow = delegate (object sender, ClientUriToShowEventArgs args)
             {
                 if (uri != null)
                 {
@@ -217,55 +216,15 @@ namespace Microsoft.Dynamics.Nav.UserSession
                 serviceAddress += (string.IsNullOrEmpty(tenantId) ? "?" : "&") + "company=" + Uri.EscapeDataString(company);
             }
 
-            if (authentication == null)
+            Uri addressUri = ServiceAddressProvider.ServiceAddress(new Uri(serviceAddress));
+            ICredentials credentials = null;
+            if (authentication.GetValueOrDefault() == AuthenticationScheme.UserNamePassword)
             {
-                // Discover Authentication settings
-                ServiceSettings serviceSettings = new ServiceSettings(new DiscoverSettingsProvider(AsyncClientDiscoveryFactory.Create(new Uri(serviceAddress))));
-                authentication = serviceSettings.AuthenticationScheme;
+                credentials = new NetworkCredential(username, password);
             }
 
-            var binding = new BasicHttpBinding();
-            var clientServiceClient = new WcfServiceClient(binding, new EndpointAddress(serviceAddress));
-
-            Uri addressUri = new Uri(serviceAddress);
-            binding.Security.Mode = addressUri.Scheme == Uri.UriSchemeHttps ? BasicHttpSecurityMode.Transport : BasicHttpSecurityMode.TransportCredentialOnly;
-
-            binding.AllowCookies = true;
-            binding.MaxReceivedMessageSize = int.MaxValue;
-            binding.MaxBufferSize = int.MaxValue;
-            binding.MaxBufferPoolSize = int.MaxValue;
-            binding.ReaderQuotas.MaxStringContentLength = 10240000;
-            binding.ReaderQuotas.MaxDepth = 64;
-            binding.UseDefaultWebProxy = true;
-            binding.OpenTimeout = TimeSpan.FromMinutes(10);
-            binding.ReceiveTimeout = TimeSpan.FromMinutes(10);
-            binding.SendTimeout = TimeSpan.FromMinutes(10);
-            binding.CloseTimeout = TimeSpan.FromMinutes(10);
-
-            switch (authentication)
-            {
-                case AuthenticationScheme.Ntlm:
-                    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Ntlm;
-                    binding.Security.Message.ClientCredentialType = BasicHttpMessageCredentialType.UserName;
-                    clientServiceClient.ClientCredentials.Windows.AllowedImpersonationLevel = System.Security.Principal.TokenImpersonationLevel.Impersonation;
-                    clientServiceClient.ChannelFactory.Credentials.Windows.ClientCredential = System.Net.CredentialCache.DefaultNetworkCredentials;
-                    break;
-                case AuthenticationScheme.Windows:
-                    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Windows;
-                    clientServiceClient.ClientCredentials.Windows.AllowedImpersonationLevel = System.Security.Principal.TokenImpersonationLevel.Impersonation;
-                    clientServiceClient.ChannelFactory.Credentials.Windows.ClientCredential = System.Net.CredentialCache.DefaultNetworkCredentials;
-                    break;
-                case AuthenticationScheme.UserNamePassword:
-                    binding.Security.Transport.ClientCredentialType = HttpClientCredentialType.Basic;
-                    binding.Security.Message = new BasicHttpMessageSecurity { ClientCredentialType = BasicHttpMessageCredentialType.UserName };
-                    clientServiceClient.ClientCredentials.UserName.UserName = username;
-                    clientServiceClient.ClientCredentials.UserName.Password = password;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("authentication");
-            }
-
-            return new ClientSession(new AsyncWcfClientService(clientServiceClient), new NonDispatcher(), new TimerFactory<ThreadTimer>());
+            var jsonClient = new JsonHttpClient(addressUri, credentials, authentication.GetValueOrDefault());
+            return new ClientSession(jsonClient, new NonDispatcher(), new TimerFactory<TaskTimer>());
         }
 
         /// <summary>

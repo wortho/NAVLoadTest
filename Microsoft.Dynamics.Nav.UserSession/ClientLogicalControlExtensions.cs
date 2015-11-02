@@ -46,6 +46,14 @@ namespace Microsoft.Dynamics.Nav.UserSession
             return rootForm.Session.CatchDialog(() => rootForm.Session.InvokeInteraction(new InvokeActionInteraction(control)));
         }
 
+        public static ClientLogicalForm InvokeCatchLookup(this ClientLogicalControl control)
+        {
+            var rootForm = control.GetRootForm();
+            return rootForm.Session.CatchLookupForm(() => 
+                rootForm.Session.InvokeInteraction(
+                    new InvokeActionInteraction(control, SystemAction.Lookup)));
+        }
+
         /// <summary>Save a value for the control.</summary>
         /// <param name="control">The control.</param>
         /// <param name="newValue">The new Value.</param>

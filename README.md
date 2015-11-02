@@ -11,5 +11,4 @@ Microsoft.Dynamics.Nav.UserSession : Client Library for the NAV Client Services 
 
 The solution also requires the following librabries from Microsoft which should be available with Microsoft Dynamics NAV Cumulative Updates.
 Microsoft.Dynamics.Framework.UI.Client.dll
-Microsoft.Dynamics.Framework.UI.Client.Net40.dll
 
