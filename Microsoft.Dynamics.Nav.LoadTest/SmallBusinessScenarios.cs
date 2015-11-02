@@ -17,6 +17,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private const int MiniPurchaseInvoiceCard = 1354;
         private const int PostedPurchaseInvoiceCard = 1357;
         private const int MiniVendorList = 1331;
+        private const int PostedPurchaseInvoiceList = 1359;
 
         private static UserContextManager userContextManager;
 
@@ -187,6 +188,45 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                 TestContext,
                 userContext,
                 postedPurchaseInvoicePage);
+        }
+
+        [TestMethod]
+        public void SortPostedPurchaseInvoiceListByAmount()
+        {
+            TestScenario.Run(
+                UserContextManager,
+                TestContext,
+                userContext =>
+                {
+                    TestScenario.RunPageAction(
+                        TestContext,
+                        userContext,
+                        PostedPurchaseInvoiceList,
+                        form =>
+                        {
+                            WriteCurrentRow(form);
+                            using (new TestTransaction(TestContext, "SortAmountDescending"))
+                            {
+                                var amountColumnControl = form.Repeater().Column("Amount");
+                                amountColumnControl.Action("Descending").Invoke();
+                            }
+                            WriteCurrentRow(form);
+                            using (new TestTransaction(TestContext, "SortAmountAscending"))
+                            {
+                                var amountColumnControl = form.Repeater().Column("Amount");
+                                amountColumnControl.Action("Ascending").Invoke();
+                            }
+                            WriteCurrentRow(form);
+                        });
+                });
+        }
+
+        private void WriteCurrentRow(ClientLogicalForm form)
+        {
+            TestContext.WriteLine(
+                "Current Purchase Invoice {0} {1}",
+                form.Repeater().CurrentRow.Control("No.").StringValue,
+                form.Repeater().CurrentRow.Control("Amount").StringValue);
         }
 
         [ClassCleanup]
