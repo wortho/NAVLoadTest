@@ -19,6 +19,7 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         public string DefaultTenantId { get; private set; }
         public string Company { get; private set; }
         public int? RoleCenterId { get; private set; }
+        public string UICultureId { get; private set; }
 
         /// <summary>
         /// Create the UserContextManager for the specified server/tenant/company
@@ -27,13 +28,20 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <param name="defaultTenantId">Tenant</param>
         /// <param name="companyName">Company</param>
         /// <param name="roleCenterId">Role Center to use for the users</param>
-        protected UserContextManager(string navServerUrl, string defaultTenantId, string companyName, int? roleCenterId)
+        /// <param name="uiCultureId">The language culture Id. For example "da-DK"</param>
+        protected UserContextManager(
+        string navServerUrl,
+        string defaultTenantId,
+        string companyName,
+        int? roleCenterId,
+        string uiCultureId)
         {
             this.UserContextPool = new ConcurrentDictionary<int, UserContext>();
             this.NAVServerUrl = navServerUrl;
             this.DefaultTenantId = defaultTenantId;
             this.Company = companyName;
             this.RoleCenterId = roleCenterId;
+            this.UICultureId = uiCultureId;
         }
 
         /// <summary>
@@ -60,7 +68,7 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
 
                     using (new TestTransaction(testContext, "OpenSession"))
                     {
-                        userContext.OpenSession();
+                        userContext.OpenSession(UICultureId);
                     }
 
                     if (RoleCenterId.HasValue)
