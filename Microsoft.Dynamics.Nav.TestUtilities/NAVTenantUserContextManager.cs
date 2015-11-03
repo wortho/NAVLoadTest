@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Dynamics.Framework.UI.Client;
+﻿using Microsoft.Dynamics.Framework.UI.Client;
 using Microsoft.Dynamics.Nav.UserSession;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -10,11 +8,34 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
     {
         private const int NumberOfTenants = 6;
         private const int NumberOfUsersPerTenant = 5;
-
-        public NAVTenantUserContextManager(string navServerUrl, string defaultTenantId, string companyName, int? roleCenterId, string defaultNAVUserName, string defaultNAVPassword) 
-            : base(navServerUrl, defaultTenantId, companyName, roleCenterId, defaultNAVUserName, defaultNAVPassword)
-        {
-        }
+        /// <summary>
+        /// Create a NAVTenantUserContextManager using NAVUserPassword Authentication
+        /// Tenant Id determined by the virtual user id
+        /// </summary>
+        /// <param name="navServerUrl">URL for NAV ClientService</param>
+        /// <param name="defaultTenantId">Default Tenant Id</param>
+        /// <param name="companyName">Company</param>
+        /// <param name="roleCenterId">Role Center to use for the users</param>
+        /// <param name="defaultNAVUserName">Default User Name</param>
+        /// <param name="defaultNAVPassword">Default Password</param>
+        /// <param name="uiCultureId">The language culture Id. For example "da-DK"</param>
+        public NAVTenantUserContextManager(
+            string navServerUrl,
+            string defaultTenantId,
+            string companyName,
+            int? roleCenterId,
+            string defaultNAVUserName,
+            string defaultNAVPassword,
+            string uiCultureId = null) 
+            : base(
+                  navServerUrl,
+                  defaultTenantId,
+                  companyName,
+                  roleCenterId,
+                  defaultNAVUserName,
+                  defaultNAVPassword,
+                  uiCultureId)
+        {}
 
         protected override UserContext CreateUserContext(TestContext testContext)
         {
