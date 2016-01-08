@@ -28,14 +28,12 @@ namespace Microsoft.Dynamics.Nav.LoadTest
 
         private static UserContextManager CreateUserContextManager()
         {
-            // use NAV User Password authentication
-            userContextManager = new NAVUserContextManager(
+            // use Windows authentication
+            userContextManager = new WindowsUserContextManager(
                    Settings.Default.NAVClientService,
                    null,
                    null,
-                   SmallBusinessRoleCentre,
-                   Settings.Default.NAVUserName,
-                   Settings.Default.NAVUserPassword);
+                   SmallBusinessRoleCentre);
             return userContextManager;
         }
         

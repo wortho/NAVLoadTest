@@ -32,20 +32,20 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private UserContextManager CreateUserContextManager()
         {
             // use NAV User Password authentication
-            orderProcessorUserContextManager = new NAVUserContextManager(
-                   NAVClientService,
-                   null,
-                   null,
-                   OrderProcessorRoleCenterId,
-                   NAVUserName,
-                   NAVPassword);
+            //orderProcessorUserContextManager = new NAVUserContextManager(
+            //       NAVClientService,
+            //       null,
+            //       null,
+            //       OrderProcessorRoleCenterId,
+            //       NAVUserName,
+            //       NAVPassword);
 
             // Use the current windows user uncomment the following
-            //orderProcessorUserContextManager = new WindowsUserContextManager(
-            //        NAVClientService,
-            //        null,
-            //        null,
-            //        OrderProcessorRoleCenterId);
+            orderProcessorUserContextManager = new WindowsUserContextManager(
+                    NAVClientService,
+                    null,
+                    null,
+                    OrderProcessorRoleCenterId);
 
             // to use NAV User Password authentication for multiple tenants uncomment the following
             //orderProcessorUserContextManager = new NAVTenantUserContextManager(
