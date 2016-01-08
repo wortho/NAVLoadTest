@@ -11,6 +11,7 @@
         <TestProfile Name="OpenSalesOrderList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="90df1a89-4f7e-a136-4a5d-897ec43aabc6" Percentage="20" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
         <TestProfile Name="OpenItemList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="acd48b66-ac60-f5d7-15c5-d5b58196ab5e" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
         <TestProfile Name="OpenSalesQuotesList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="22f8558f-21fa-32c5-6516-a891bd60da97" Percentage="20" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="CreateSalesQuote" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="656d4c3e-1469-875f-b2ff-1db144661c07" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </TestMix>
       <NetworkMix>
         <NetworkProfile Percentage="100">
