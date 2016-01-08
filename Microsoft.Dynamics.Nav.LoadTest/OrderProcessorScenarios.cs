@@ -112,6 +112,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                     form =>
                     {
                         TestContext.WriteLine("Page Caption {0}",form.Caption);
+                        form.WriteControlCaptions<ClientLogicalForm>();
                     }));
         }
 
