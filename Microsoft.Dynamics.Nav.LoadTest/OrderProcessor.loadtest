@@ -1,15 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<LoadTest Name="OrderProcessor" Description="" Owner="" storage="c:\users\david\source\repos\navperf\navloadtest\microsoft.dynamics.nav.loadtest\orderprocessor.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Local Run Settings" Id="fa74f8a5-071e-4010-8308-a196d65aaec2" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+<LoadTest Name="OrderProcessor" Description="" Owner="" storage="c:\users\david\source\repos\wortho\navloadtest\microsoft.dynamics.nav.loadtest\orderprocessor.loadtest" Priority="2147483647" Enabled="true" CssProjectStructure="" CssIteration="" DeploymentItemsEditable="" WorkItemIds="" TraceLevel="None" CurrentRunConfig="Local Run Settings" Id="fa74f8a5-071e-4010-8308-a196d65aaec2" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
   <Scenarios>
     <Scenario Name="OrderProcessor" DelayBetweenIterations="1" PercentNewUsers="0" IPSwitching="false" TestMixType="UserPacing" ApplyDistributionToPacingDelay="true" MaxTestIterations="0" DisableDuringWarmup="false" DelayStartTime="0" AllowedAgents="">
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
       <LoadProfile Pattern="Step" InitialUsers="1" MaxUsers="10" StepUsers="1" StepDuration="5" StepRampTime="1" />
       <TestMix>
-        <TestProfile Name="CreateAndPostSalesOrder" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="0ccccaab-949d-ff08-f7c9-1f6c39ccaa4d" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-        <TestProfile Name="LookupRandomCustomer" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="124b6946-dda6-c20a-1373-971c02696515" Percentage="20" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-        <TestProfile Name="OpenCustomerList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="b060714e-05f5-4af1-a0f5-21eda02f4ea7" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-        <TestProfile Name="OpenSalesOrderList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="90df1a89-4f7e-a136-4a5d-897ec43aabc6" Percentage="20" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-        <TestProfile Name="OpenItemList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="acd48b66-ac60-f5d7-15c5-d5b58196ab5e" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="CreateAndPostSalesOrder" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="0ccccaab-949d-ff08-f7c9-1f6c39ccaa4d" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="LookupRandomCustomer" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="124b6946-dda6-c20a-1373-971c02696515" Percentage="20" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="OpenCustomerList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="b060714e-05f5-4af1-a0f5-21eda02f4ea7" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="OpenSalesOrderList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="90df1a89-4f7e-a136-4a5d-897ec43aabc6" Percentage="20" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="OpenItemList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="acd48b66-ac60-f5d7-15c5-d5b58196ab5e" Percentage="12" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="OpenSalesQuotesList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="22f8558f-21fa-32c5-6516-a891bd60da97" Percentage="20" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </TestMix>
       <NetworkMix>
         <NetworkProfile Percentage="100">
@@ -84,7 +85,7 @@
             <Counter Name="Avg. Response Time" />
             <Counter Name="Avg. Connection Wait Time">
               <ThresholdRules>
-                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
                   <RuleParameters>
                     <RuleParameter Name="DependentCategory" Value="LoadTest:Page" />
                     <RuleParameter Name="DependentCounter" Value="Avg. Page Time" />
@@ -149,7 +150,7 @@
             <Counter Name="Current Bandwidth" RangeGroup="Network Bytes" />
             <Counter Name="Bytes Total/sec" RangeGroup="Network Bytes">
               <ThresholdRules>
-                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
                   <RuleParameters>
                     <RuleParameter Name="DependentCategory" Value="Network Interface" />
                     <RuleParameter Name="DependentCounter" Value="Current Bandwidth" />
@@ -296,7 +297,7 @@
             <Counter Name="Current Bandwidth" RangeGroup="Network Bytes" />
             <Counter Name="Bytes Total/sec" RangeGroup="Network Bytes">
               <ThresholdRules>
-                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
                   <RuleParameters>
                     <RuleParameter Name="DependentCategory" Value="Network Interface" />
                     <RuleParameter Name="DependentCounter" Value="Current Bandwidth" />
@@ -431,7 +432,7 @@
           <Counters>
             <Counter Name="# Open connections">
               <ThresholdRules>
-                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <ThresholdRule Classname="Microsoft.VisualStudio.TestTools.WebStress.Rules.ThresholdRuleCompareCounters, Microsoft.VisualStudio.QualityTools.LoadTest, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
                   <RuleParameters>
                     <RuleParameter Name="AlertIfOver" Value="True" />
                     <RuleParameter Name="WarningThreshold" Value="2" />
@@ -464,9 +465,9 @@
     </CounterSet>
   </CounterSets>
   <RunConfigurations>
-    <RunConfiguration Name="Local Run Settings" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="0" MaxErrorDetails="200" MaxErrorsPerType="10" MaxThresholdViolations="100" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="600" WarmupTime="0" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="5" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0">
+    <RunConfiguration Name="Local Run Settings" Description="" ResultsStoreType="Database" TimingDetailsStorage="AllIndividualDetails" SaveTestLogsOnError="true" SaveTestLogsFrequency="0" MaxErrorDetails="200" MaxErrorsPerType="10" MaxThresholdViolations="100" MaxRequestUrlsReported="1000" UseTestIterations="false" RunDuration="600" WarmupTime="0" CoolDownTime="0" TestIterations="100" WebTestConnectionModel="ConnectionPerUser" WebTestConnectionPoolSize="50" SampleRate="5" ValidationLevel="High" SqlTracingConnectString="" SqlTracingConnectStringDisplayValue="" SqlTracingDirectory="" SqlTracingEnabled="false" SqlTracingFileCount="2" SqlTracingRolloverEnabled="true" SqlTracingMinimumDuration="500" RunUnitTestsInAppDomain="true" CoreCount="0" UseMultipleIPs="false" TestAgentConfiguration="Default" AgentDiagnosticsLevel="Warning">
       <CounterSetMappings>
-        <CounterSetMapping ComputerName="localhost">
+        <CounterSetMapping ComputerName="DAVIDX1">
           <CounterSetReferences>
             <CounterSetReference CounterSetName="NAVServer" />
           </CounterSetReferences>
