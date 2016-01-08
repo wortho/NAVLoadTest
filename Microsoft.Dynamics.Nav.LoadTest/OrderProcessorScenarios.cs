@@ -143,7 +143,24 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                     TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, sellToCustControl, custNo);
 
                     TestContext.WriteLine("Page Caption {0}", newSalesQuotePage.Caption);
+
+                    var repeater = newSalesQuotePage.Repeater();
+                    var itemsLine = repeater.DefaultViewport[0];
+
+                    // Activate Type field
+                    itemsLine.Control("Type").Activate();
+
+                    // set Type = Item
+                    TestScenario.SaveValueWithDelay(itemsLine.Control("Type"), "Item");
+
+                    // Set Item No. from random lookup
+                    var itemNoControl = itemsLine.Control("No.");
+                    var itemNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, itemNoControl, "No.");
+                    TestScenario.SaveValueWithDelay(itemNoControl, itemNo);
                     
+                    // Set the qty
+                    TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, itemsLine.Control("Quantity"), "1");
+
                     // Close the page
                     TestScenario.ClosePage(
                         TestContext,
