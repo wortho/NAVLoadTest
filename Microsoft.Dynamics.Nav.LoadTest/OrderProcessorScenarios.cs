@@ -19,6 +19,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private const int SalesOrderListPageId = 9305;
         private const int SalesOrderPageId = 42;
         private const int SalesQuotesListPageId = 9300;
+        private const int SalesQuoteCardPageId = 41;
 
         private static UserContextManager orderProcessorUserContextManager;
 
@@ -114,6 +115,41 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                         TestContext.WriteLine("Page Caption {0}",form.Caption);
                         form.WriteControlCaptions<ClientLogicalForm>();
                     }));
+        }
+
+        [TestMethod]
+        public void CreateSalesQuote()
+        {
+            // Create a new Sales Quote
+            TestScenario.Run(
+                OrderProcessorUserContextManager,
+                TestContext,
+                userContext =>
+                {
+                    // Invoke using the Sales Quote action on Role Center and catch the new page
+                    var newSalesQuotePage = userContext.EnsurePage(
+                        SalesQuoteCardPageId,
+                        userContext.RoleCenterPage.Action("Sales Quote")
+                            .InvokeCatchForm());
+
+                    // Navigate to Sell-to Customer No. field in order to create record
+                    var sellToCustControl = newSalesQuotePage.Control("Sell-to Customer No.");
+                    sellToCustControl.Activate();
+
+                    // select a random customer from Sell-to Customer No. lookup
+                    var custNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, sellToCustControl, "No.");
+
+                    // Set Sell-to Customer No. and ignore any warnings
+                    TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, sellToCustControl, custNo);
+
+                    TestContext.WriteLine("Page Caption {0}", newSalesQuotePage.Caption);
+                    
+                    // Close the page
+                    TestScenario.ClosePage(
+                        TestContext,
+                        userContext,
+                        newSalesQuotePage);
+                });
         }
 
         [TestMethod]
