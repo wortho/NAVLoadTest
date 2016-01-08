@@ -18,6 +18,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private const int ItemListPageId = 31;
         private const int SalesOrderListPageId = 9305;
         private const int SalesOrderPageId = 42;
+        private const int SalesQuotesListPageId = 9300;
 
         private static UserContextManager orderProcessorUserContextManager;
 
@@ -98,6 +99,20 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             // Open Page "Sales Order List" which contains a list of all sales orders
             TestScenario.Run(OrderProcessorUserContextManager, TestContext,
                 userContext => TestScenario.RunPageAction(TestContext, userContext, SalesOrderListPageId));
+        }
+
+        [TestMethod]
+        public void OpenSalesQuotesList()
+        {
+            TestScenario.Run(OrderProcessorUserContextManager, TestContext,
+                userContext => TestScenario.RunPageAction(
+                    TestContext,
+                    userContext,
+                    SalesQuotesListPageId,
+                    form =>
+                    {
+                        TestContext.WriteLine("Page Caption {0}",form.Caption);
+                    }));
         }
 
         [TestMethod]
