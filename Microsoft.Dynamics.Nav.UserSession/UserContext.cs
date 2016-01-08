@@ -47,9 +47,9 @@ namespace Microsoft.Dynamics.Nav.UserSession
         public ClientLogicalForm RoleCenterPage { get; private set; }
 
         /// <summary>Opens the session synchronously.</summary>
-        public void OpenSession()
+        public void OpenSession(string uiCultureId)
         {
-            this.ClientSession.OpenSession();
+            this.ClientSession.OpenSession(uiCultureId);
             this.ClientSession.DialogToShow += clientSession_DialogToShow;
         }
 

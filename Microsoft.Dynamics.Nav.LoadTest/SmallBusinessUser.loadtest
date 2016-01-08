@@ -5,8 +5,10 @@
       <ThinkProfile Value="0.2" Pattern="NormalDistribution" />
       <LoadProfile Pattern="Step" InitialUsers="1" MaxUsers="5" StepUsers="1" StepDuration="5" StepRampTime="0" />
       <TestMix>
-        <TestProfile Name="OpenCloseMiniPurchaseInvoiceList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="31c72294-bf7a-b6da-746b-79dc09590f4b" Percentage="120" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="OpenCloseMiniPurchaseInvoiceList" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="31c72294-bf7a-b6da-746b-79dc09590f4b" Percentage="60" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
         <TestProfile Name="CreateAndPostPurchaseInvoice" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="a1c6edc7-6b03-16ab-636b-097ac9000a4d" Percentage="60" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="SortPostedPurchaseInvoiceListByAmount" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="ef50c3db-05a7-823f-aec8-5f7da20f4b01" Percentage="30" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+        <TestProfile Name="FilterPostedPurchaseInvoiceListByVendor" Path="bin\debug\microsoft.dynamics.nav.loadtest.dll" Id="68aab0f0-5aa1-f3d2-7c34-5b09ddeea369" Percentage="30" Type="Microsoft.VisualStudio.TestTools.TestTypes.Unit.UnitTestElement, Microsoft.VisualStudio.QualityTools.Tips.UnitTest.ObjectModel, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
       </TestMix>
       <NetworkMix>
         <NetworkProfile Percentage="100">

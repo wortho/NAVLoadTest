@@ -26,8 +26,16 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <param name="roleCenterId">Role Center to use for the users</param>
         /// <param name="defaultNAVUserName">Default User Name</param>
         /// <param name="defaultNAVPassword">Default Password</param>
-        public NAVUserContextManager(string navServerUrl, string defaultTenantId, string companyName, int? roleCenterId, string defaultNAVUserName, string defaultNAVPassword)
-            : base(navServerUrl, defaultTenantId, companyName, roleCenterId)
+        /// <param name="uiCultureId">The language culture Id. For example "da-DK"</param>
+        public NAVUserContextManager(
+            string navServerUrl,
+            string defaultTenantId,
+            string companyName,
+            int? roleCenterId,
+            string defaultNAVUserName,
+            string defaultNAVPassword,
+            string uiCultureId = null)
+            : base(navServerUrl, defaultTenantId, companyName, roleCenterId, uiCultureId)
         {
             DefaultNAVUserName = defaultNAVUserName;
             DefaultNAVPassword = defaultNAVPassword;

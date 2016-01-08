@@ -17,6 +17,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private const int MiniPurchaseInvoiceCard = 1354;
         private const int PostedPurchaseInvoiceCard = 1357;
         private const int MiniVendorList = 1331;
+        private const int PostedPurchaseInvoiceList = 1359;
 
         private static UserContextManager userContextManager;
 
@@ -187,6 +188,74 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                 TestContext,
                 userContext,
                 postedPurchaseInvoicePage);
+        }
+
+        [TestMethod]
+        public void SortPostedPurchaseInvoiceListByAmount()
+        {
+            TestScenario.Run(
+                UserContextManager,
+                TestContext,
+                userContext =>
+                {
+                    TestScenario.RunPageAction(
+                        TestContext,
+                        userContext,
+                        PostedPurchaseInvoiceList,
+                        form =>
+                        {
+                            var amountColumnControl = form.Repeater().Column("Amount");
+                            using (new TestTransaction(TestContext, "SortAmountDescending"))
+                            {
+                                userContext.InvokeInteraction(
+                                    new InvokeActionInteraction(
+                                        amountColumnControl.Action("Descending")));
+                            }
+                            using (new TestTransaction(TestContext, "SortAmountAscending"))
+                            {
+                                userContext.InvokeInteraction(
+                                    new InvokeActionInteraction(
+                                        amountColumnControl.Action("Ascending")));
+                            }
+                        });
+                });
+        }
+
+        [TestMethod]
+        public void FilterPostedPurchaseInvoiceListByVendor()
+        {
+            TestScenario.Run(
+                UserContextManager,
+                TestContext,
+                userContext =>
+                {
+                    // select a random vendor to filter by
+                    var vendorName = TestScenario.SelectRandomRecordFromListPage(
+                        TestContext,
+                        userContext,
+                        MiniVendorList,
+                        "Name");
+
+                    TestScenario.RunPageAction(
+                        TestContext,
+                        userContext,
+                        PostedPurchaseInvoiceList,
+                        form =>
+                        {
+                            var vendorNameColumn = form.Repeater().Column("Vendor Name");
+                            TestScenario.ApplyColumnFilter(
+                                TestContext,
+                                userContext,
+                                vendorNameColumn,
+                                vendorName);
+                            using (new TestTransaction(TestContext, "ClearFilterByVendorName"))
+                            {
+                                userContext.InvokeInteraction(
+                                    new InvokeActionInteraction(
+                                        vendorNameColumn.Action("Clear Filter")));
+                            }
+                        });
+                });
         }
 
         [ClassCleanup]

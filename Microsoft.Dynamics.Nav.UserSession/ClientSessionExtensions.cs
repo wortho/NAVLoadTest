@@ -28,9 +28,16 @@ namespace Microsoft.Dynamics.Nav.UserSession
 
         /// <summary>Opens the session synchronously.</summary>
         /// <param name="clientSession">The client Session.</param>
-        public static void OpenSession(this ClientSession clientSession)
+        /// <param name="uiCultureId">The language culture Id. For example "da-DK"</param>
+        public static void OpenSession(
+            this ClientSession clientSession,
+            string uiCultureId)
         {
-            var sessionParameters = new ClientSessionParameters { CultureId = CultureInfo.CurrentCulture.Name };
+            var sessionParameters = new ClientSessionParameters
+            {
+                CultureId = CultureInfo.CurrentCulture.Name,
+                UICultureId = uiCultureId
+            };
             sessionParameters.AdditionalSettings.Add("IncludeControlIdentifier", true);
             clientSession.AwaitReady(() => clientSession.OpenSessionAsync(sessionParameters));
         }

@@ -18,8 +18,15 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <param name="defaultTenantId">Tenant</param>
         /// <param name="companyName">Company</param>
         /// <param name="roleCenterId">Role Center to use for the users</param>
-        public WindowsUserContextManager(string navServerUrl, string defaultTenantId, string companyName, int? roleCenterId)
-            : base(navServerUrl, defaultTenantId, companyName, roleCenterId){}
+        /// <param name="uiCultureId">The language culture Id. For example "da-DK"</param>
+        public WindowsUserContextManager(
+            string navServerUrl,
+            string defaultTenantId,
+            string companyName,
+            int? roleCenterId,
+            string uiCultureId = null)
+            : base(navServerUrl, defaultTenantId, companyName, roleCenterId, uiCultureId)
+        { }
 
 
         protected override UserContext CreateUserContext(TestContext testContext)

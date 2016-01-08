@@ -9,6 +9,8 @@ Microsoft.Dynamics.Nav.LoadTest : A sample test for NAV Order Processor Scenario
 Microsoft.Dynamics.Nav.TestUtilities : Test utilities to help build test scenarios
 Microsoft.Dynamics.Nav.UserSession : Client Library for the NAV Client Services Web Service
 
-The solution also requires the following librabries from Microsoft which should be available with Microsoft Dynamics NAV Cumulative Updates.
-Microsoft.Dynamics.Framework.UI.Client.dll
+Dependencies:
+The solution requires the NAV client framework libraries from Microsoft which are available with Microsoft Dynamics NAV Cumulative Updates. The required assembly name is Microsoft.Dynamics.Framework.UI.Client.dll
+
+Building and running load tests requires the Microsoft.VisualStudio.TestTools.LoadTesting library and the load testing tools in Visual Studio. The load testing tools in currently only available in the Visual Studio Enterprise Edition.
 
