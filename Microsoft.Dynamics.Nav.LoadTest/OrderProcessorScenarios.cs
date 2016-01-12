@@ -5,6 +5,7 @@ using Microsoft.Dynamics.Nav.LoadTest.Properties;
 using Microsoft.Dynamics.Nav.TestUtilities;
 using Microsoft.Dynamics.Nav.UserSession;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Microsoft.Dynamics.Nav.LoadTest
 {
@@ -18,6 +19,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private const int ItemListPageId = 31;
         private const int SalesOrderListPageId = 9305;
         private const int SalesOrderPageId = 42;
+        private const int SalesQuotesListPageId = 9300;
 
         private static UserContextManager orderProcessorUserContextManager;
 
@@ -147,7 +149,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
 
             // select a random customer from Sell-to Customer No. lookup
             var custNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, sellToCustControl, "No.");
-            
+
             // Set Sell-to Customer No. to a Random Customer and ignore any credit warning
             TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, sellToCustControl, custNo);
 
@@ -231,5 +233,103 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             // Look at the line for 1 seconds.
             DelayTiming.SleepDelay(DelayTiming.ThinkDelay);
         }
+
+        [TestMethod]
+        public void OpenSalesQuotesList()
+        {
+            TestScenario.Run(OrderProcessorUserContextManager, TestContext,
+                userContext => TestScenario.RunPageAction(TestContext, userContext, SalesQuotesListPageId,
+                    form =>
+                    {
+                        TestContext.WriteLine("Page Caption {0}", form.Caption);
+                        form.WriteControlCaptions<ClientLogicalForm>();
+                    }));
+        }
+
+        private const int SalesQuoteCardPageId = 41;
+
+        [TestMethod]
+        public void CreateSalesQuote()
+        {
+            TestScenario.Run(OrderProcessorUserContextManager, TestContext, RunCreateAndMakeSalesQuote);
+        }
+
+        public void RunCreateAndMakeSalesQuote(UserContext userContext)
+        {
+            var newSalesQuotePage = userContext.EnsurePage(
+                    SalesQuoteCardPageId,
+                    userContext.RoleCenterPage.Action("Sales Quote")
+                        .InvokeCatchForm());
+
+            // Navigate to Sell-to Customer No. field in order to create record
+            var sellToCustControl = newSalesQuotePage.Control("Sell-to Customer No.");
+            sellToCustControl.Activate();
+
+            // select a random customer from Sell-to Customer No. lookup
+            var custNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, sellToCustControl, "No.");
+
+            // Set Sell-to Customer No. and ignore any warnings
+            TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, sellToCustControl, custNo);
+
+            //Add some debug info to show what record is being created
+            TestContext.WriteLine("Page Caption {0}", newSalesQuotePage.Caption);
+
+            var repeater = newSalesQuotePage.Repeater();
+            var itemsLine = repeater.DefaultViewport[0];
+            itemsLine.Control("Type").Activate();
+            TestScenario.SaveValueWithDelay(itemsLine.Control("Type"), "Item");
+            var itemNoControl = itemsLine.Control("No.");
+            var itemNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, itemNoControl, "No.");
+            TestScenario.SaveValueWithDelay(itemNoControl, itemNo);
+            TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, itemsLine.Control("Quantity"), "0");
+
+            MakeSalesQuoteToOrder(userContext, newSalesQuotePage);
+
+            TestScenario.ClosePage(
+                TestContext,
+                userContext,
+                newSalesQuotePage);
+
+        }
+
+        private void MakeSalesQuoteToOrder(UserContext userContext, ClientLogicalForm newSalesQuotePage)
+        {
+            ClientLogicalForm confirmConvertQuote;
+            ClientLogicalForm warningDialog;
+            ClientLogicalForm convertDialog;
+
+            using (new TestTransaction(TestContext, "MakeOrder"))
+            {
+                confirmConvertQuote = newSalesQuotePage.Action("Make Order").InvokeCatchDialog();
+                if (confirmConvertQuote == null)
+                {
+                    Assert.Inconclusive("Confirm Convert Quote dialog can't be found");
+                }
+            }
+
+            using (new TestTransaction(TestContext, "ConvertQuote"))
+            {
+                TestContext.WriteLine("Dialog Message {0}", confirmConvertQuote.FindMessage());
+                warningDialog = confirmConvertQuote.Action("Yes").InvokeCatchDialog();
+                if (warningDialog != null)
+                {
+                    TestContext.WriteLine("Dialog Message {0} {1}", warningDialog.FindMessage(), warningDialog.Id);
+                    try
+                    {
+                        convertDialog = warningDialog.Action("Yes").InvokeCatchDialog();
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        convertDialog = warningDialog;
+                    }   
+                    if (convertDialog != null)
+                    {
+                        TestContext.WriteLine("Dialog Message {0} {1}", convertDialog.FindMessage(), convertDialog.Id);
+                        convertDialog.Action("OK").Invoke();
+                    }
+                }
+            }
+        }
+
     }
 }
