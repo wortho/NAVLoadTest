@@ -281,7 +281,9 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             var itemNoControl = itemsLine.Control("No.");
             var itemNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, itemNoControl, "No.");
             TestScenario.SaveValueWithDelay(itemNoControl, itemNo);
-            TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, itemsLine.Control("Quantity"), "0");
+
+            var qtyToOrder = SafeRandom.GetRandomNext(1, 10).ToString(CultureInfo.InvariantCulture);
+            TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, itemsLine.Control("Quantity"), qtyToOrder);
 
             MakeSalesQuoteToOrder(userContext, newSalesQuotePage);
 
