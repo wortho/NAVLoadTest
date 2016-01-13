@@ -6,6 +6,7 @@ using Microsoft.Dynamics.Nav.TestUtilities;
 using Microsoft.Dynamics.Nav.UserSession;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.IO;
 
 namespace Microsoft.Dynamics.Nav.LoadTest
 {
@@ -20,6 +21,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         private const int SalesOrderListPageId = 9305;
         private const int SalesOrderPageId = 42;
         private const int SalesQuotesListPageId = 9300;
+        private const int SalesQuoteCardPageId = 41;
 
         private static UserContextManager orderProcessorUserContextManager;
 
@@ -246,7 +248,6 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                     }));
         }
 
-        private const int SalesQuoteCardPageId = 41;
 
         [TestMethod]
         public void CreateSalesQuote()
@@ -333,5 +334,39 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             }
         }
 
+        [TestMethod]
+        public void CustomerTop10List()
+        {
+            TestScenario.Run(
+                OrderProcessorUserContextManager,
+                TestContext, 
+                userContext => RunReportToPDF(userContext, "Customer - Top 10 List"));
+        }
+
+        [TestMethod]
+        public void CustomerOrderSummary()
+        {
+            TestScenario.Run(
+                OrderProcessorUserContextManager,
+                TestContext,
+                userContext => RunReportToPDF(userContext, "Customer - Order Summary"));
+        }
+
+        public void RunReportToPDF(UserContext userContext, string actionName)
+        {
+            userContext.RoleCenterPage.WriteControlCaptions<ClientActionControl>();
+            var customerTop10ListAction = userContext.RoleCenterPage.Action(actionName);
+            var requestPage = customerTop10ListAction.InvokeCatchDialog();
+            var sendToAction = requestPage.Control("Send to...");
+            var sendToDlg = sendToAction.InvokeCatchDialog();
+            var uri = userContext.RoleCenterPage.Session.CatchUriToShow(() => sendToDlg.Action("OK").Invoke());
+            var fileStream = new FileStream(@"c:\temp\" + Guid.NewGuid().ToString() + ".pdf", FileMode.Create);
+            using (fileStream)
+            {
+                userContext.RoleCenterPage.Session.DownloadResourceStreamAsync(uri, fileStream).Wait();
+                userContext.WaitForReady();
+                fileStream.Close(); 
+            }
+        }
     }
 }
