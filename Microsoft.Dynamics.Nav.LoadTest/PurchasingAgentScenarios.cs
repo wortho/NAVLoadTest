@@ -8,23 +8,20 @@ using Microsoft.Dynamics.Nav.UserSession;
 namespace Microsoft.Dynamics.Nav.LoadTest
 {
     [TestClass]
-    public class SmallBusinessScenarios
+    public class PurchasingAgentScenarios
     {
         public TestContext TestContext { get; set; }
 
-        private const int SmallBusinessRoleCentre = 9022;
-        private const int MiniPurchaseInvoiceList = 1356;
-        private const int MiniPurchaseInvoiceCard = 1354;
-        private const int PostedPurchaseInvoiceCard = 1357;
-        private const int MiniVendorList = 1331;
-        private const int PostedPurchaseInvoiceList = 1359;
+        private const int PurchasingAgentRoleCenterId = 9007;
+        private const int PurchaseInvoiceList = 9308;
+        private const int PurchaseInvoiceCard = 51;
+        private const int PostedPurchaseInvoiceCard = 138;
+        private const int VendorList = 27;
+        private const int PostedPurchaseInvoiceList = 146;
 
         private static UserContextManager userContextManager;
 
-        public UserContextManager UserContextManager
-        {
-            get { return userContextManager ?? CreateUserContextManager(); }
-        }
+        public UserContextManager UserContextManager => userContextManager ?? CreateUserContextManager();
 
         private static UserContextManager CreateUserContextManager()
         {
@@ -33,16 +30,16 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                    Settings.Default.NAVClientService,
                    null,
                    null,
-                   SmallBusinessRoleCentre,
+                   PurchasingAgentRoleCenterId,
                    Settings.Default.NAVUserName,
                    Settings.Default.NAVUserPassword);
             return userContextManager;
         }
         
         [TestMethod]
-        public void OpenCloseMiniPurchaseInvoiceList()
+        public void OpenClosePurchaseInvoiceList()
         {
-            // Open and Close MiniPurchaseInvoiceList
+            // Open and Close PurchaseInvoiceList
             TestScenario.Run(
                 UserContextManager,
                 TestContext,
@@ -51,7 +48,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                     TestScenario.RunPageAction(
                         TestContext,
                         userContext,
-                        MiniPurchaseInvoiceList,
+                        PurchaseInvoiceList,
                         form =>
                         {
                             TestContext.WriteLine(
@@ -79,14 +76,14 @@ namespace Microsoft.Dynamics.Nav.LoadTest
         {
             // Invoke using the Purchase Invoice action on Role Center and catch the new page
             var newPurchaseInvoicePage = userContext.EnsurePage(
-                MiniPurchaseInvoiceCard,
+                PurchaseInvoiceCard,
                 userContext.RoleCenterPage.Action("Purchase Invoice")
                     .InvokeCatchForm());
 
             var vendorName = TestScenario.SelectRandomRecordFromListPage(
                 TestContext,
                 userContext,
-                MiniVendorList,
+                VendorList,
                 "Name");
 
             TestScenario.SaveValueAndIgnoreWarning(
@@ -114,7 +111,6 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             return newPurchaseInvoicePage;
         }
 
-
         private void AddPurchaseInvoiceLine(
             UserContext userContext,
             ClientLogicalForm purchaseInvoicePage,
@@ -133,9 +129,10 @@ namespace Microsoft.Dynamics.Nav.LoadTest
 
                 var rowIndex = (int) (index - repeater.Offset);
                 var itemsLine = repeater.DefaultViewport[rowIndex];
-
-                // select random Item No. from  lookup
-                var itemNoControl = itemsLine.Control("Item No.");
+                var itemTypeControl = itemsLine.Control("Type");
+                TestScenario.SaveValueWithDelay(itemTypeControl, "Item");
+                // select random Item No. from lookup
+                var itemNoControl = itemsLine.Control("No.");
                 var itemNo = TestScenario.SelectRandomRecordFromLookup(
                     TestContext,
                     userContext,
@@ -233,7 +230,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                     var vendorName = TestScenario.SelectRandomRecordFromListPage(
                         TestContext,
                         userContext,
-                        MiniVendorList,
+                        VendorList,
                         "Name");
 
                     TestScenario.RunPageAction(
@@ -242,7 +239,7 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                         PostedPurchaseInvoiceList,
                         form =>
                         {
-                            var vendorNameColumn = form.Repeater().Column("Vendor Name");
+                            var vendorNameColumn = form.Repeater().Column("Vendor");
                             TestScenario.ApplyColumnFilter(
                                 TestContext,
                                 userContext,
