@@ -76,8 +76,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
-    <None Include="SmallBusinessUser.loadtest">
+    <None Include="PurchasingAgent.loadtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </None>
     <None Include="OrderProcessor.loadtest">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
