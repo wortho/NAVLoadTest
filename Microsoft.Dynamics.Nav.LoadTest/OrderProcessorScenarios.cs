@@ -142,19 +142,19 @@ namespace Microsoft.Dynamics.Nav.LoadTest
             newSalesOrderPage.Control("No.").Activate();
 
             // Navigate to Sell-to Customer No. field in order to create record
-            var sellToCustControl = newSalesOrderPage.Control("Sell-to Customer No.");
-            sellToCustControl.Activate();
+            var custNameControl = newSalesOrderPage.Control("Customer Name");
+            custNameControl.Activate();
 
             // select a random customer from Sell-to Customer No. lookup
-            var custNo = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, sellToCustControl, "No.");
+            var custName = TestScenario.SelectRandomRecordFromLookup(TestContext, userContext, custNameControl, "Name");
             
-            // Set Sell-to Customer No. to a Random Customer and ignore any credit warning
-            TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, sellToCustControl, custNo);
+            // Set Customer Name to a Random Customer and ignore any credit warning
+            TestScenario.SaveValueAndIgnoreWarning(TestContext, userContext, custNameControl, custName);
 
-            TestScenario.SaveValueWithDelay(newSalesOrderPage.Control("External Document No."), custNo);
+            TestScenario.SaveValueWithDelay(newSalesOrderPage.Control("External Document No."), custName);
             var newSalesOrderNo = newSalesOrderPage.Control("No.").StringValue;
             userContext.ValidateForm(newSalesOrderPage);
-            TestContext.WriteLine("Created Sales Order No. {0} for Cust No. {1}", newSalesOrderNo, custNo);
+            TestContext.WriteLine("Created Sales Order No. {0} for Customer {1}", newSalesOrderNo, custName);
 
             // Add a random number of lines between 2 and 25
             var noOfLines = SafeRandom.GetRandomNext(2, 25);
@@ -187,13 +187,21 @@ namespace Microsoft.Dynamics.Nav.LoadTest
                 Assert.Inconclusive("Post dialog can't be found");
             }
 
+            ClientLogicalForm openPostedInvoiceDialog;
             using (new TestTransaction(TestContext, "ConfirmShipAndInvoice"))
             {
-                ClientLogicalForm dialog = userContext.CatchDialog(postConfirmationDialog.Action("OK").Invoke);
-                if (dialog != null)
+                openPostedInvoiceDialog = userContext.CatchDialog(postConfirmationDialog.Action("OK").Invoke);
+            }
+
+            ClientLogicalForm postedInvoicePage;
+            using (new TestTransaction(TestContext, "OpenPostedInvoice"))
+            {
+                if (openPostedInvoiceDialog != null)
                 {
-                    // after confiming the post we dont expect more dialogs
-                    Assert.Fail("Unexpected Dialog on Post - Caption: {0} Message: {1}", dialog.Caption, dialog.FindMessage());
+                    postedInvoicePage = userContext.CatchForm(openPostedInvoiceDialog.Action("Yes").Invoke);
+                    var newSalesInvoiceNo = postedInvoicePage.Control("No.").StringValue;
+                    TestContext.WriteLine("Posted Sales Invoice No. {0}", newSalesInvoiceNo);
+                    TestScenario.ClosePage(TestContext, userContext, postedInvoicePage);
                 }
             }
         }
