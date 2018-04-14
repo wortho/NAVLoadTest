@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microsoft.Dynamics.Nav.UserSession", "Microsoft.Dynamics.Nav.UserSession\Microsoft.Dynamics.Nav.UserSession.csproj", "{FB75EE9A-A002-49CA-8891-C7C58C62EFB7}"
 EndProject
@@ -57,5 +57,8 @@ Global
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{C5452BC5-6455-4B36-A325-4E82B800062B} = {5226F406-1917-4265-8598-DF1DDD20D157}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {1C7CEE68-9B35-42A7-BE2D-89A73444D2F5}
 	EndGlobalSection
 EndGlobal
