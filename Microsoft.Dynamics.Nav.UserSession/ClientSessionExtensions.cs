@@ -16,7 +16,7 @@ namespace Microsoft.Dynamics.Nav.UserSession
 
         private const int AwaitDuration = 500;
 
-        private const int AwaitAllFormsAreClosedDuration = 10000;
+        private const int AwaitAllFormsAreClosedDuration = 5000;
 
         /// <summary>Invokes the interaction synchronously.</summary>
         /// <param name="clientSession">The client Session.</param>
@@ -51,42 +51,53 @@ namespace Microsoft.Dynamics.Nav.UserSession
                 return;
             }
 
-            clientSession.AwaitReady(clientSession.CloseSessionAsync, session => session.State == ClientSessionState.Closed, true, AwaitForeverDuration);
+            clientSession.AwaitReady(
+                clientSession.CloseSessionAsync,
+                session => session.State == ClientSessionState.Closed, 
+                true,
+                AwaitForeverDuration);
         }
 
         /// <summary>Closes the froms in the session synchronously.</summary>
         /// <param name="clientSession">The client Session.</param>
         public static void CloseAllForms(this ClientSession clientSession)
         {
-            clientSession.AwaitReady(
-                () => clientSession.InvokeInteractionsAsync(
-                    clientSession.OpenedForms.Select(clientLogicalForm => new CloseFormInteraction(clientLogicalForm))
-                    ),
+            clientSession.AwaitReady(() => 
+                    CloseAllFormsAsync(clientSession),
                     session => session.State == ClientSessionState.Ready && !session.OpenedForms.Any(),
                     false,
-                    AwaitForeverDuration
-                );
+                    AwaitAllFormsAreClosedDuration);
         }
 
         /// <summary>Closes the froms in the session asynchronously.</summary>
         /// <param name="clientSession">The client Session.</param>
         public static void CloseAllFormsAsync(this ClientSession clientSession)
         {
-            clientSession.InvokeInteractionsAsync(clientSession.OpenedForms.Select(clientLogicalForm => new CloseFormInteraction(clientLogicalForm)));
+            clientSession.InvokeInteractionsAsync(
+                clientSession.OpenedForms.Select(
+                    clientLogicalForm => new CloseFormInteraction(clientLogicalForm)));
         }
 
         /// <summary>Awaits until all the forms are closed.</summary>
         /// <param name="clientSession">The client Session.</param>
         public static bool AwaitSessionIsReady(this ClientSession clientSession)
         {
-            return clientSession.AwaitReady(() => { }, session => session.State == ClientSessionState.Ready, false, AwaitDuration);
+            return clientSession.AwaitReady(
+                () => { }, 
+                session => session.State == ClientSessionState.Ready,
+                false,
+                AwaitDuration);
         }
 
         /// <summary>Awaits until all the forms are closed.</summary>
         /// <param name="clientSession">The client Session.</param>
         public static bool AwaitAllFormsAreClosedAndSessionIsReady(this ClientSession clientSession)
         {
-            return clientSession.AwaitReady(() => { }, session => session.State == ClientSessionState.Ready && !session.OpenedForms.Any(), false, AwaitAllFormsAreClosedDuration);
+            return clientSession.AwaitReady(
+                () => { }, 
+                session => session.State == ClientSessionState.Ready && !session.OpenedForms.Any(), 
+                false, 
+                AwaitAllFormsAreClosedDuration);
         }
 
         /// <summary>"Catches" a new form opened (if any) during executions of <paramref name="action"/>.</summary>
@@ -297,7 +308,12 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <param name="action">The action.</param>
         internal static void AwaitReady(this ClientSession clientSession, Action action)
         {
-            AwaitReady(clientSession, action, session => session.State == ClientSessionState.Ready, false, AwaitForeverDuration);
+            AwaitReady(
+                clientSession, 
+                action, 
+                session => session.State == ClientSessionState.Ready, 
+                false,
+                AwaitForeverDuration);
         }
 
         /// <summary>
@@ -308,7 +324,12 @@ namespace Microsoft.Dynamics.Nav.UserSession
         /// <param name="readyCondition">The ready Condition.</param>
         /// <param name="allowClosed">if set to <c>true</c> allows session state to be closed.</param>
         /// <param name="maxDuration">Max await duration.</param>
-        internal static bool AwaitReady(this ClientSession clientSession, Action action, Func<ClientSession, bool> readyCondition, bool allowClosed, int maxDuration)
+        internal static bool AwaitReady(
+            this ClientSession clientSession,
+            Action action, 
+            Func<ClientSession, bool> readyCondition, 
+            bool allowClosed, 
+            int maxDuration)
         {
             bool waitForever = maxDuration < 0;
 
