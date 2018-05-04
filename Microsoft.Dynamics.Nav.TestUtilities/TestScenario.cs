@@ -73,9 +73,12 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         {
             if (form.State == ClientLogicalFormState.Open)
             {
-                using (new TestTransaction(testContext, String.Format("ClosePage{0}", UserContext.GetActualPageNo(form))))
+                using (new TestTransaction(testContext, $"ClosePage{UserContext.GetActualPageNo(form)}"))
                 {
-                    context.InvokeInteraction(new CloseFormInteraction(form));
+                    InvokeActionAndCloseAnyDialog(
+                        testContext,
+                        context,
+                        () => context.InvokeInteraction(new CloseFormInteraction(form)));
                 }
             }
         }
@@ -109,23 +112,41 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
         /// <param name="control">the control to be updated</param>
         /// <param name="value">the value</param>
         /// <param name="ignoreAction">the name of the action, default is Yes</param>
-        public static void SaveValueAndIgnoreWarning(TestContext context, UserContext userContext, ClientLogicalControl control, string value, string ignoreAction = "Yes")
+        public static void SaveValueAndIgnoreWarning(
+            TestContext context, 
+            UserContext userContext, 
+            ClientLogicalControl control, 
+            string value, 
+            string ignoreAction = "Yes")
         {
-            var dialog = userContext.CatchDialog(() => SaveValueWithDelay(control, value));
+            InvokeActionAndCloseAnyDialog(
+                context, 
+                userContext, 
+                () => SaveValueWithDelay(control, value), 
+                ignoreAction);
+        }
+
+        public static void InvokeActionAndCloseAnyDialog(
+            TestContext context, 
+            UserContext userContext, 
+            Action action, 
+            string closeDialogAction = "Yes")
+        {
+            var dialog = userContext.CatchDialog(action);
             if (dialog != null)
             {
                 try
                 {
-                    var action = dialog.Action(ignoreAction);
-                    if (action != null)
+                    var dialogAction = dialog.Action(closeDialogAction);
+                    if (dialogAction != null)
                     {
-                        action.Invoke();
-                        context.WriteLine("Dialog Caption: {0} Message: {1} was ignored with Action: {2} ", dialog.Caption, dialog.FindMessage(), ignoreAction);
+                        dialogAction.Invoke();
+                        context.WriteLine($"Dialog Caption: {dialog.Caption} Message: {dialog.FindMessage()} was closed with Action: {closeDialogAction}.");
                     }
                 }
                 catch (InvalidOperationException)
                 {
-                    context.WriteLine("Dialog Caption: {0} Message: {1} Action: {2} was not found.", dialog.Caption, dialog.FindMessage(), ignoreAction);
+                    context.WriteLine($"Dialog Caption: {dialog.Caption} Message: {dialog.FindMessage()} Action: {closeDialogAction} was not found.");
                     throw;
                 }
             }
