@@ -178,6 +178,37 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
             }
         }
 
+
+        public static string SelectRandomRecordFromLookup(
+            TestContext testContext,
+            UserContext context,
+            ClientLogicalControl control,
+            string keyFieldCaption,
+            string filterColumnName,
+            string filterValue)
+        {
+            var form = control.InvokeCatchLookup();
+            if (form == null)
+            {
+                throw new InvalidOperationException("No Lookup Form found");
+            }
+            try
+            {
+                form.ExecuteQuickFilter(filterColumnName, filterValue);
+                var randomKey = SelectRandomRecord(form, keyFieldCaption);
+                testContext.WriteLine(
+                "Selected Random Record from Lookup:{0} Key:{1} Value:{2}",
+                control.Caption,
+                keyFieldCaption,
+                randomKey);
+                return randomKey;
+            }
+            finally
+            {
+                ClosePage(testContext, context, form);
+            }
+        }
+
         public static string SelectRandomRecord(
             ClientLogicalForm form,
             string keyFieldCaption)
@@ -187,6 +218,7 @@ namespace Microsoft.Dynamics.Nav.TestUtilities
             var rowToSelect = SafeRandom.GetRandomNext(rowCount);
             var rowControl = form.Repeater().DefaultViewport[rowToSelect];
             var randomKey = rowControl.Control(keyFieldCaption).StringValue;
+            rowControl.Activate();
             return randomKey;
         }
 
