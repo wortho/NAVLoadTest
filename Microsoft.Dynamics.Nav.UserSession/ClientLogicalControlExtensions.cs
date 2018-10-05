@@ -125,5 +125,22 @@ namespace Microsoft.Dynamics.Nav.UserSession
         {
             return control.Caption.Replace("&", "").Equals(caption);
         }
+
+        public static void SelectOption(this ClientLogicalControl control, string text)
+        {
+            try
+            {
+                var selectControl = control
+                    .ContainedControls
+                    .OfType<ClientSelectionControl>()
+                    .First(c => c.Items.Any(i => i.Text.Replace("&", "").Equals(text)));
+                var item = selectControl.Items.First(i => i.Text.Replace("&", "").Equals(text));
+                selectControl.SaveValue(item.Value);
+            }
+            catch (InvalidOperationException exception)
+            {
+                throw new ArgumentOutOfRangeException(string.Format("Could not find an Selection Control with item text {0}", text), exception);
+            }
+        }
     }
 }
